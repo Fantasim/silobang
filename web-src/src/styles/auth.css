@@ -1,0 +1,1156 @@
+/* =============================================================================
+   LOGIN PAGE
+   ============================================================================= */
+
+.login-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--bg-primary);
+}
+
+.login-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-bright);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8);
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 0 40px rgba(0, 255, 65, 0.1);
+}
+
+.login-title {
+  font-size: var(--font-3xl);
+  font-weight: 700;
+  color: var(--terminal-green);
+  text-align: center;
+  margin: 0 0 var(--space-2) 0;
+  letter-spacing: var(--tracking-wider);
+  text-shadow: 0 0 10px var(--terminal-green-glow);
+}
+
+.login-subtitle {
+  font-size: var(--font-base);
+  color: var(--text-secondary);
+  text-align: center;
+  margin: 0 0 var(--space-6) 0;
+}
+
+.login-label {
+  display: block;
+  margin-bottom: var(--space-1);
+  color: var(--text-secondary);
+  font-size: var(--font-sm);
+  letter-spacing: var(--tracking-wide);
+}
+
+.login-input {
+  width: 100%;
+  padding: var(--space-2-5) var(--space-3);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--font-base);
+  margin-bottom: var(--space-4);
+  transition: border-color var(--transition-fast);
+  outline: none;
+  box-sizing: border-box;
+}
+
+.login-input:focus {
+  border-color: var(--terminal-green);
+  box-shadow: var(--glow-subtle);
+}
+
+.login-input:disabled {
+  opacity: 0.5;
+}
+
+/* =============================================================================
+   BOOTSTRAP CREDENTIALS DISPLAY
+   ============================================================================= */
+
+.setup-card--wide {
+  max-width: 560px;
+}
+
+.bootstrap-warning {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  margin-bottom: var(--space-4);
+  background: color-mix(in srgb, var(--terminal-amber) 10%, transparent);
+  border: 1px solid var(--terminal-amber);
+  border-radius: var(--radius-md);
+  color: var(--terminal-amber);
+  font-size: var(--font-sm);
+  font-weight: 600;
+}
+
+.bootstrap-credentials {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.credential-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.credential-label {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+.credential-value {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: var(--font-base);
+  color: var(--terminal-cyan);
+  word-break: break-all;
+}
+
+.credential-value-text {
+  flex: 1;
+  user-select: all;
+}
+
+.credential-copy-btn {
+  flex-shrink: 0;
+  background: transparent;
+  border: 1px solid var(--border-dim);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: var(--space-1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.credential-copy-btn:hover {
+  border-color: var(--terminal-green);
+  color: var(--terminal-green);
+}
+
+.credential-copy-btn--copied {
+  border-color: var(--terminal-green);
+  color: var(--terminal-green);
+}
+
+/* =============================================================================
+   NAVBAR AUTH SECTION
+   ============================================================================= */
+
+.navbar-user {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-left: auto;
+}
+
+.navbar-username {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1-5);
+  color: var(--text-secondary);
+  font-size: var(--font-sm);
+}
+
+.navbar-logout {
+  background: transparent;
+  border: 1px solid var(--border-dim);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--font-sm);
+  padding: var(--space-1) var(--space-3);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.navbar-logout:hover {
+  border-color: var(--terminal-red);
+  color: var(--terminal-red);
+  background: color-mix(in srgb, var(--terminal-red) 10%, transparent);
+}
+
+/* =============================================================================
+   USERS PAGE — Master-Detail Layout
+   ============================================================================= */
+
+.users-page {
+  height: calc(100vh - 63px);
+  overflow: hidden;
+}
+
+.users-page-layout {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  height: 100%;
+}
+
+.users-page-master {
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border-dim);
+  overflow: hidden;
+}
+
+.users-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-4) var(--space-4) var(--space-3);
+  flex-shrink: 0;
+}
+
+.users-page-title {
+  font-size: var(--font-lg);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.users-page-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.users-page-detail {
+  overflow-y: auto;
+}
+
+.users-page-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: var(--space-3);
+}
+
+.users-page-empty-text {
+  color: var(--text-dim);
+  font-size: var(--font-sm);
+  margin: 0;
+}
+
+/* =============================================================================
+   USER LIST PANEL
+   ============================================================================= */
+
+.users-list-panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+
+.users-list-search {
+  padding: 0 var(--space-4) var(--space-3);
+  flex-shrink: 0;
+}
+
+.users-list-scroll {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.users-list-empty {
+  padding: var(--space-6) var(--space-4);
+  text-align: center;
+  color: var(--text-dim);
+  font-size: var(--font-sm);
+}
+
+.users-list-footer {
+  padding: var(--space-2) var(--space-4);
+  border-top: 1px solid var(--white-alpha-5);
+  flex-shrink: 0;
+}
+
+.users-list-count {
+  font-size: var(--font-xs);
+  color: var(--text-dim);
+}
+
+/* Users table */
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: var(--font-sm);
+}
+
+.users-table th {
+  text-align: left;
+  padding: var(--space-1-5) var(--space-4);
+  color: var(--text-secondary);
+  font-size: var(--font-xs);
+  letter-spacing: var(--tracking-wide);
+  border-bottom: 1px solid var(--border-dim);
+  text-transform: uppercase;
+}
+
+.users-table td {
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 1px solid var(--white-alpha-5);
+  color: var(--text-primary);
+}
+
+.users-table tr {
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.users-table tr:hover {
+  background: var(--bg-tertiary);
+}
+
+.users-table tr.users-table-row--selected {
+  background: color-mix(in srgb, var(--terminal-green) 12%, transparent);
+  box-shadow: inset 3px 0 0 var(--terminal-green);
+}
+
+.users-table tr.users-table-row--selected td:first-child {
+  color: var(--terminal-green);
+}
+
+/* Status badges */
+.user-status-badge {
+  display: inline-flex;
+  padding: var(--space-0-5) var(--space-2);
+  margin: var(--space-0-5);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-xs);
+  font-weight: 600;
+  letter-spacing: var(--tracking-wide);
+}
+
+.user-status-badge--active {
+  background: color-mix(in srgb, var(--terminal-green) 15%, transparent);
+  color: var(--terminal-green);
+}
+
+.user-status-badge--disabled {
+  background: color-mix(in srgb, var(--terminal-red) 15%, transparent);
+  color: var(--terminal-red);
+}
+
+.user-status-badge--bootstrap {
+  background: color-mix(in srgb, var(--terminal-cyan) 15%, transparent);
+  color: var(--terminal-cyan);
+  margin-left: var(--space-1);
+}
+
+/* =============================================================================
+   USER DETAIL PANEL
+   ============================================================================= */
+
+.user-detail {
+  border: 1px solid var(--border-dim);
+  border-radius: var(--radius-lg);
+  background: var(--bg-secondary);
+  margin: var(--space-4);
+}
+
+.user-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border-dim);
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.user-detail-header-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.user-detail-header h2 {
+  margin: 0;
+  font-size: var(--font-lg);
+  color: var(--text-primary);
+}
+
+.user-detail-tabs {
+  padding: var(--space-3) var(--space-4) 0;
+  border-bottom: 1px solid var(--white-alpha-5);
+}
+
+/* Prevent toggle-group from stretching full-width (its background is --border-dim = green) */
+.user-detail-tabs .toggle-group {
+  width: fit-content;
+}
+
+.user-detail-body {
+  padding: var(--space-4);
+}
+
+.user-detail-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8);
+}
+
+/* Field rows in detail panel */
+.user-field-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.user-field-label {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  min-width: 120px;
+  flex-shrink: 0;
+}
+
+.user-field-value {
+  font-size: var(--font-base);
+  color: var(--text-primary);
+}
+
+.user-field-input {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--font-base);
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color var(--transition-fast);
+}
+
+.user-field-input:focus {
+  border-color: var(--terminal-green);
+}
+
+/* Action buttons row */
+.user-actions {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+/* =============================================================================
+   GRANTS SECTION — Card-based layout
+   ============================================================================= */
+
+.grants-section {
+  /* No extra margin — body padding handles it */
+}
+
+.grants-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-3);
+}
+
+.grants-count {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  font-weight: 600;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+.grants-empty {
+  color: var(--text-dim);
+  font-size: var(--font-sm);
+  font-style: italic;
+  margin: 0;
+}
+
+.grants-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.grants-list--revoked {
+  margin-top: var(--space-2);
+  opacity: 0.5;
+}
+
+/* Grant card */
+.grant-card {
+  padding: var(--space-3);
+  border: 1px solid var(--white-alpha-5);
+  border-radius: var(--radius-md);
+  background: var(--bg-tertiary);
+  transition: border-color var(--transition-fast);
+}
+
+.grant-card:hover {
+  border-color: var(--border-dim);
+}
+
+.grant-card--editing {
+  border-color: var(--terminal-green);
+}
+
+.grant-card--revoked {
+  opacity: 0.6;
+}
+
+.grant-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Only add bottom margin when followed by content */
+.grant-card-header:not(:last-child) {
+  margin-bottom: var(--space-2);
+}
+
+.grant-card-actions {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.grant-card-constraints {
+  /* Constraints display area */
+}
+
+.grant-card-edit {
+  margin-top: var(--space-2);
+}
+
+.grant-card-edit-actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.grant-revoked-label {
+  font-size: var(--font-xs);
+  color: var(--terminal-red);
+}
+
+/* Grant action badge */
+.grant-action-badge {
+  display: inline-flex;
+  padding: var(--space-0-5) var(--space-2);
+  background: color-mix(in srgb, var(--terminal-cyan) 10%, transparent);
+  border: 1px solid var(--terminal-cyan-dim);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-xs);
+  color: var(--terminal-cyan);
+}
+
+.grant-action-badge--revoked {
+  background: color-mix(in srgb, var(--terminal-red) 10%, transparent);
+  border-color: var(--terminal-red);
+  color: var(--terminal-red);
+  opacity: 0.6;
+}
+
+/* Grants revoked details */
+.grants-revoked-details {
+  margin-top: var(--space-3);
+}
+
+.grants-revoked-summary {
+  color: var(--text-dim);
+  font-size: var(--font-sm);
+  cursor: pointer;
+  user-select: none;
+}
+
+.grants-revoked-summary:hover {
+  color: var(--text-secondary);
+}
+
+/* Grant constraints display */
+.grant-constraints-none {
+  font-size: var(--font-xs);
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+/* =============================================================================
+   CONSTRAINT SUMMARY — Human-readable display
+   ============================================================================= */
+
+.constraint-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1-5);
+}
+
+.constraint-summary-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--font-xs);
+  padding: var(--space-0-5) var(--space-2);
+  background: color-mix(in srgb, var(--terminal-green) 5%, transparent);
+  border: 1px solid var(--white-alpha-5);
+  border-radius: var(--radius-pill);
+}
+
+.constraint-summary-item--custom {
+  background: color-mix(in srgb, var(--terminal-amber) 8%, transparent);
+  border-color: var(--terminal-amber);
+  color: var(--terminal-amber);
+}
+
+.constraint-summary-label {
+  color: var(--text-secondary);
+}
+
+.constraint-summary-value {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.constraint-summary-value--yes {
+  color: var(--terminal-green);
+}
+
+.constraint-summary-value--no {
+  color: var(--terminal-red);
+}
+
+.constraint-summary-error {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--font-xs);
+  color: var(--terminal-amber);
+}
+
+.constraint-summary-error-text {
+  font-style: italic;
+}
+
+/* =============================================================================
+   CONSTRAINT EDITOR — Visual form
+   ============================================================================= */
+
+.constraint-editor-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.constraint-editor-empty {
+  color: var(--text-dim);
+  font-size: var(--font-sm);
+  font-style: italic;
+  margin: var(--space-2) 0;
+}
+
+.constraint-field {
+  /* Individual field wrapper */
+}
+
+.constraint-field-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.constraint-field-row--toggle {
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--white-alpha-5);
+  border-radius: var(--radius-md);
+}
+
+.constraint-field-row--stacked {
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-1-5);
+}
+
+.constraint-field-label {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  flex-shrink: 0;
+  min-width: 160px;
+}
+
+.constraint-field-row--stacked .constraint-field-label {
+  min-width: auto;
+}
+
+.constraint-field-number {
+  max-width: 200px;
+}
+
+/* =============================================================================
+   TOGGLE SWITCH — Terminal-styled boolean
+   ============================================================================= */
+
+.toggle-switch {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.toggle-switch:hover {
+  border-color: var(--text-dim);
+}
+
+.toggle-switch--active {
+  background: color-mix(in srgb, var(--terminal-green) 20%, transparent);
+  border-color: var(--terminal-green);
+}
+
+.toggle-switch--disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.toggle-switch-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: var(--radius-full);
+  background: var(--text-dim);
+  transition: all var(--transition-fast);
+}
+
+.toggle-switch--active .toggle-switch-thumb {
+  transform: translateX(16px);
+  background: var(--terminal-green);
+  box-shadow: 0 0 6px var(--terminal-green-glow);
+}
+
+/* =============================================================================
+   TAG INPUT — String array as chips
+   ============================================================================= */
+
+.tag-input {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  padding: var(--space-1-5) var(--space-2);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--radius-md);
+  min-height: var(--height-md);
+  align-items: center;
+  transition: border-color var(--transition-fast);
+  cursor: text;
+  box-sizing: border-box;
+}
+
+.tag-input:focus-within {
+  border-color: var(--terminal-green);
+}
+
+.tag-input--disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.tag-input-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.tag-input-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-0-5);
+  padding: var(--space-0-5) var(--space-2);
+  background: color-mix(in srgb, var(--terminal-cyan) 15%, transparent);
+  border: 1px solid var(--terminal-cyan-dim);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-xs);
+  color: var(--terminal-cyan);
+}
+
+.tag-input-tag-text {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tag-input-tag-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--terminal-cyan-dim);
+  cursor: pointer;
+  padding: 0;
+  margin-left: var(--space-0-5);
+  transition: color var(--transition-fast);
+}
+
+.tag-input-tag-remove:hover {
+  color: var(--terminal-red);
+}
+
+.tag-input-field {
+  flex: 1;
+  min-width: 80px;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--font-sm);
+  padding: var(--space-0-5) 0;
+}
+
+.tag-input-field::placeholder {
+  color: var(--text-dim);
+}
+
+/* --- TagInput with suggestions layout --- */
+
+.tag-input--with-suggestions {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  padding: 0;
+  cursor: default;
+}
+
+.tag-input-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-2) var(--space-1-5);
+  border-bottom: 1px solid var(--white-alpha-5);
+}
+
+.tag-input-suggestions-loading,
+.tag-input-suggestions-empty {
+  font-size: var(--font-xs);
+  color: var(--text-dim);
+  font-style: italic;
+  padding: var(--space-0-5) 0;
+}
+
+.tag-input-suggestion {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-0-5) var(--space-2);
+  background: var(--bg-primary);
+  border: 1px solid var(--white-alpha-10);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-mono);
+  font-size: var(--font-xs);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.tag-input-suggestion:hover {
+  border-color: var(--terminal-green);
+  color: var(--text-primary);
+  background: color-mix(in srgb, var(--terminal-green) 5%, transparent);
+}
+
+.tag-input-suggestion--selected {
+  background: color-mix(in srgb, var(--terminal-green) 15%, transparent);
+  border-color: var(--terminal-green);
+  color: var(--terminal-green);
+}
+
+.tag-input-suggestion--selected:hover {
+  background: color-mix(in srgb, var(--terminal-red) 10%, transparent);
+  border-color: var(--terminal-red);
+  color: var(--terminal-red);
+}
+
+.tag-input-suggestion:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.tag-input-area {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  align-items: center;
+  padding: var(--space-1-5) var(--space-2);
+  min-height: var(--height-md);
+  cursor: text;
+}
+
+/* When no suggestions, the area IS the container — no extra padding needed */
+.tag-input:not(.tag-input--with-suggestions) .tag-input-area {
+  padding: 0;
+  min-height: auto;
+}
+
+/* =============================================================================
+   BYTE INPUT — Number + unit selector composite
+   ============================================================================= */
+
+.byte-input {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.byte-input-number {
+  flex: 1;
+  max-width: 200px;
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--font-base);
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color var(--transition-fast);
+}
+
+.byte-input-number:focus {
+  border-color: var(--terminal-green);
+}
+
+.byte-input-number:disabled {
+  opacity: 0.5;
+}
+
+.byte-input-unit {
+  padding: var(--space-2) var(--space-2);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--font-sm);
+  outline: none;
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.byte-input-unit:focus {
+  border-color: var(--terminal-green);
+}
+
+.byte-input-unit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* =============================================================================
+   ADD GRANT MODAL — Two-step flow
+   ============================================================================= */
+
+.add-grant-subtitle {
+  color: var(--text-secondary);
+  font-size: var(--font-sm);
+  margin: 0 0 var(--space-3) 0;
+}
+
+.add-grant-actions-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+
+.add-grant-action-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  text-align: left;
+  transition: all var(--transition-fast);
+  font-family: var(--font-mono);
+}
+
+.add-grant-action-card:hover {
+  border-color: var(--terminal-green);
+  background: color-mix(in srgb, var(--terminal-green) 5%, transparent);
+}
+
+.add-grant-action-card-label {
+  font-size: var(--font-sm);
+  font-weight: 600;
+  color: var(--terminal-cyan);
+}
+
+.add-grant-action-card-desc {
+  font-size: var(--font-xs);
+  color: var(--text-dim);
+  line-height: var(--leading-relaxed);
+}
+
+.add-grant-back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--font-sm);
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: var(--space-3);
+  transition: color var(--transition-fast);
+}
+
+.add-grant-back:hover {
+  color: var(--terminal-green);
+}
+
+.add-grant-constraints {
+  margin-bottom: var(--space-3);
+}
+
+.add-grant-constraints-title {
+  font-size: var(--font-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  margin: 0 0 var(--space-1) 0;
+}
+
+.add-grant-constraints-desc {
+  font-size: var(--font-xs);
+  color: var(--text-dim);
+  margin: 0 0 var(--space-3) 0;
+}
+
+/* =============================================================================
+   QUOTA TABLE
+   ============================================================================= */
+
+.quota-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-sm);
+}
+
+.quota-table th {
+  text-align: left;
+  padding: var(--space-1-5) var(--space-2);
+  color: var(--text-secondary);
+  font-size: var(--font-xs);
+  letter-spacing: var(--tracking-wide);
+  border-bottom: 1px solid var(--border-dim);
+  text-transform: uppercase;
+}
+
+.quota-table td {
+  padding: var(--space-1-5) var(--space-2);
+  border-bottom: 1px solid var(--white-alpha-5);
+  color: var(--text-primary);
+}
+
+/* =============================================================================
+   API KEY DISPLAY
+   ============================================================================= */
+
+.api-key-display {
+  margin-top: var(--space-4);
+  padding: var(--space-3);
+  background: color-mix(in srgb, var(--terminal-amber) 8%, transparent);
+  border: 1px solid var(--terminal-amber);
+  border-radius: var(--radius-md);
+}
+
+.api-key-display-warning {
+  font-size: var(--font-sm);
+  color: var(--terminal-amber);
+  font-weight: 600;
+  margin-bottom: var(--space-2);
+}
+
+/* =============================================================================
+   CONFIRMATION DIALOGS
+   ============================================================================= */
+
+.confirm-dialog {
+  padding: var(--space-4);
+}
+
+.confirm-dialog-message {
+  font-size: var(--font-base);
+  color: var(--text-primary);
+  margin-bottom: var(--space-4);
+}
+
+.confirm-dialog-actions {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: flex-end;
+}
+
+/* =============================================================================
+   PERMISSION DENIED
+   ============================================================================= */
+
+.permission-denied {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  gap: var(--space-4);
+  color: var(--text-secondary);
+}
+
+.permission-denied-icon {
+  color: var(--terminal-red);
+}
+
+.permission-denied-message {
+  font-size: var(--font-lg);
+  text-align: center;
+}

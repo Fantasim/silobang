@@ -1,0 +1,116 @@
+/* ============================================================================
+   MODALS - Cleaned for MeshBank Dashboard
+   Kept: Base modal container, backdrop, and content styles
+   ============================================================================ */
+
+.cp-modals-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  z-index: var(--z-cp-modal-backdrop);
+}
+
+.cp-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--black-alpha-80);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-cp-modal);
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--transition-slow) var(--ease-default);
+}
+
+.cp-modal.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.cp-modal-content {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-bright);
+  border-radius: var(--border-radius);
+  min-width: 400px;
+  max-width: 500px;
+  max-height: 85vh;
+  overflow-y: auto;
+  transform: scale(0.95) translateY(-20px);
+  transition: all var(--transition-slow) var(--ease-default);
+  box-shadow: 0 0 40px rgba(0, 255, 65, 0.2);
+}
+
+.cp-modal.active .cp-modal-content {
+  transform: scale(1) translateY(0);
+}
+
+.cp-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-dim);
+}
+
+.cp-modal-title {
+  font-size: var(--font-lg);
+  color: var(--terminal-cyan);
+  letter-spacing: var(--tracking-wide);
+  font-weight: 600;
+}
+
+.cp-modal-subtitle {
+  font-size: var(--font-base);
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+  margin-top: var(--space-1);
+}
+
+.cp-modal-header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.cp-modal-close {
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: 1px solid var(--border-dim);
+  border-radius: var(--border-radius);
+  color: var(--text-dim);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-lg);
+  transition: all var(--transition-medium);
+}
+
+.cp-modal-close:hover {
+  background: color-mix(in srgb, var(--terminal-red) 10%, transparent);
+  border-color: var(--terminal-red);
+  color: var(--terminal-red);
+}
+
+.cp-modal-body {
+  padding: var(--space-4) var(--space-5);
+}
+
+/* Button variants for modals */
+.cp-btn-primary {
+  background: rgba(0, 255, 65, 0.1);
+  border-color: var(--terminal-green);
+  color: var(--terminal-green);
+}
+
+.cp-btn-primary:hover {
+  background: rgba(0, 255, 65, 0.2);
+}

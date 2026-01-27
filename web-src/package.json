@@ -1,0 +1,20 @@
+{
+  "name": "meshbank-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 5173",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "preact": "^10.28.1",
+    "lucide-preact": "^0.562.0",
+    "@preact/signals": "^2.5.1"
+  },
+  "devDependencies": {
+    "@preact/preset-vite": "^2.10.2",
+    "vite": "^5.1.8"
+  }
+}

@@ -1,0 +1,266 @@
+/* =============================================================================
+   SHARED UI COMPONENTS - Cleaned for MeshBank Dashboard
+   Kept: Icon button, Error banner, Ghost button variants
+   ============================================================================= */
+
+/* =============================================================================
+   ICON BUTTON - Unified toolbar icon button component
+   ============================================================================= */
+
+.icon-btn {
+  /* CSS custom properties for color customization */
+  --ib-border: var(--border-dim);
+  --ib-color: var(--text-secondary);
+  --ib-active: var(--terminal-green);
+  --ib-hover: var(--terminal-green);
+
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--height-lg);
+  height: var(--height-lg);
+  background: var(--bg-panel);
+  border: 1px solid var(--ib-border);
+  border-radius: var(--border-radius);
+  color: var(--ib-color);
+  cursor: pointer;
+  transition: all var(--transition-medium);
+  backdrop-filter: blur(10px);
+  padding: 0;
+}
+
+.icon-btn svg {
+  display: block;
+  width: var(--font-2xl);
+  height: var(--font-2xl);
+  flex-shrink: 0;
+}
+
+.icon-btn .icon-btn-emoji {
+  display: block;
+  font-size: var(--font-2xl);
+  line-height: var(--leading-none);
+}
+
+.icon-btn:hover {
+  background: color-mix(in srgb, var(--ib-hover) 10%, transparent);
+  border-color: var(--ib-hover);
+  color: var(--ib-hover);
+}
+
+.icon-btn.active {
+  background: color-mix(in srgb, var(--ib-active) 15%, transparent);
+  border-color: var(--ib-active);
+  color: var(--ib-active);
+  box-shadow: 0 0 15px color-mix(in srgb, var(--ib-active) 30%, transparent);
+}
+
+.icon-btn.active:hover {
+  background: color-mix(in srgb, var(--ib-active) 20%, transparent);
+  box-shadow: 0 0 20px color-mix(in srgb, var(--ib-active) 40%, transparent);
+}
+
+/* Dashed border variant - for modal/action buttons */
+.icon-btn.icon-btn-dashed {
+  border-style: dashed;
+}
+
+/* Medium size variant */
+.icon-btn.icon-btn-medium {
+  width: var(--height-md);
+  height: var(--height-md);
+}
+
+.icon-btn.icon-btn-medium svg {
+  width: var(--font-xl);
+  height: var(--font-xl);
+}
+
+.icon-btn.icon-btn-medium .icon-btn-emoji {
+  font-size: var(--font-xl);
+}
+
+/* Small size variant */
+.icon-btn.icon-btn-small {
+  width: var(--height-sm);
+  height: var(--height-sm);
+}
+
+.icon-btn.icon-btn-small svg {
+  width: var(--font-md);
+  height: var(--font-md);
+}
+
+.icon-btn.icon-btn-small .icon-btn-emoji {
+  font-size: var(--font-md);
+}
+
+/* =============================================================================
+   ERROR BANNER - Reusable error message display
+   ============================================================================= */
+
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: color-mix(in srgb, var(--terminal-red) 10%, transparent);
+  border: 1px solid var(--terminal-red);
+  border-radius: var(--radius-md);
+  color: var(--terminal-red);
+  font-family: var(--font-mono);
+  font-size: var(--font-sm);
+}
+
+.error-banner span {
+  flex: 1;
+}
+
+.error-banner-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--terminal-red);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.error-banner-close:hover {
+  background: color-mix(in srgb, var(--terminal-red) 20%, transparent);
+}
+
+/* =============================================================================
+   BUTTON - Ghost variants for settings and subtle actions
+   ============================================================================= */
+
+.cp-btn-ghost {
+  padding: var(--space-1) var(--space-2);
+  background: transparent;
+  border: 1px solid var(--border-dim);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--font-xs);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.cp-btn-ghost:hover:not(:disabled) {
+  background: rgba(0, 255, 65, 0.1);
+  border-color: var(--terminal-green);
+  color: var(--terminal-green);
+}
+
+.cp-btn-ghost-danger:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--terminal-red) 10%, transparent);
+  border-color: var(--terminal-red);
+  color: var(--terminal-red);
+}
+
+/* =============================================================================
+   TOGGLE GROUP - Row of mutually exclusive toggle buttons
+   ============================================================================= */
+
+.toggle-group {
+  display: flex;
+  gap: 1px;
+  background: var(--border-dim);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.toggle-group .toggle-button {
+  background: var(--bg-secondary);
+  border: none;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--font-sm);
+  padding: var(--space-1-5) var(--space-3);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.toggle-group .toggle-button:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.toggle-group .toggle-button.active {
+  background: color-mix(in srgb, var(--terminal-green) 15%, transparent);
+  color: var(--terminal-green);
+}
+
+.toggle-group-compact {
+  gap: 1px;
+}
+
+.toggle-group-compact .toggle-button {
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--font-xs);
+}
+
+/* =============================================================================
+   SEARCH INPUT - Unified search with icon and clear button
+   ============================================================================= */
+
+.search-input-container {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1-5);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--radius-md);
+  padding: var(--space-1-5) var(--space-3);
+  transition: border-color var(--transition-fast);
+}
+
+.search-input-container:focus-within {
+  border-color: var(--terminal-green);
+  box-shadow: var(--glow-subtle);
+}
+
+.search-input-icon {
+  display: flex;
+  align-items: center;
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+
+.search-input-field {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--font-sm);
+  padding: var(--space-0-5) 0;
+  min-width: 0;
+}
+
+.search-input-field::placeholder {
+  color: var(--text-dim);
+}
+
+.search-input-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: color var(--transition-fast);
+}
+
+.search-input-clear:hover {
+  color: var(--text-primary);
+}

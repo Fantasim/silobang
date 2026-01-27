@@ -1,0 +1,133 @@
+/* ============================================================================
+   CONTROL PANEL STYLES - Cleaned for MeshBank Dashboard
+   Kept: Button styles, Tool button, Toast notifications
+   ============================================================================ */
+
+/* Tool Button */
+.cp-tool-btn {
+  width: 36px;
+  height: 36px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--border-radius);
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-xl);
+  transition: all var(--transition-medium);
+}
+
+.cp-tool-btn:hover {
+  background: rgba(0, 255, 65, 0.1);
+  border-color: var(--terminal-green);
+  color: var(--terminal-green);
+}
+
+.cp-tool-btn.active {
+  background: rgba(0, 255, 65, 0.15);
+  border-color: var(--terminal-green);
+  color: var(--terminal-green);
+}
+
+/* Buttons */
+.cp-btn {
+  background: transparent;
+  border: 1px solid var(--border-bright);
+  border-radius: var(--border-radius);
+  color: var(--terminal-green);
+  font-family: var(--font-mono);
+  font-size: var(--font-md);
+  padding: var(--space-2) var(--space-4);
+  cursor: pointer;
+  transition: all var(--transition-medium);
+  letter-spacing: var(--tracking-normal);
+}
+
+.cp-btn:hover:not(:disabled) {
+  background: rgba(0, 255, 65, 0.1);
+  box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+}
+
+.cp-btn:disabled {
+  background: rgba(0, 255, 65, 0.05);
+  border-color: var(--border-dim);
+  color: var(--terminal-green);
+  cursor: default;
+}
+
+.cp-btn-small {
+  padding: var(--space-1-5) var(--space-2-5);
+  font-size: var(--font-xs);
+}
+
+.cp-btn-icon {
+  width: var(--space-8);
+  height: var(--space-8);
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-xl);
+}
+
+.cp-btn-danger {
+  border-color: var(--terminal-red);
+  color: var(--terminal-red);
+}
+
+.cp-btn-danger:hover {
+  background: color-mix(in srgb, var(--terminal-red) 10%, transparent);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--terminal-red) 30%, transparent);
+}
+
+/* Toast Notifications */
+.cp-toast {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--bg-secondary);
+  border: 1px solid var(--terminal-green);
+  border-radius: var(--border-radius);
+  padding: 0.75rem 1.5rem;
+  color: var(--terminal-green);
+  font-family: var(--font-mono);
+  font-size: var(--font-base);
+  letter-spacing: var(--tracking-wide);
+  opacity: 0;
+  transition: all var(--transition-slow) var(--ease-default);
+  z-index: var(--z-toast);
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+}
+
+.cp-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Toast type variants */
+.cp-toast.info {
+  border-color: var(--terminal-green);
+  color: var(--terminal-green);
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+}
+
+.cp-toast.success {
+  border-color: var(--terminal-cyan);
+  color: var(--terminal-cyan);
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+}
+
+.cp-toast.warning {
+  border-color: var(--terminal-amber);
+  color: var(--terminal-amber);
+  box-shadow: 0 0 20px rgba(255, 176, 0, 0.3);
+}
+
+.cp-toast.error {
+  border-color: var(--terminal-red);
+  color: var(--terminal-red);
+  box-shadow: 0 0 20px rgba(255, 51, 51, 0.3);
+}
