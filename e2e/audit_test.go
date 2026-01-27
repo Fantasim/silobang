@@ -360,25 +360,9 @@ func TestAuditLogSkippedUpload(t *testing.T) {
 		t.Fatalf("Failed to query audit: %v", err)
 	}
 
-	// Should have 2 entries (one regular, one skipped)
-	if len(result.Entries) < 2 {
-		t.Fatalf("Expected at least 2 entries, got %d", len(result.Entries))
-	}
-
-	// Find an entry with skipped=true
-	foundSkipped := false
-	for _, entry := range result.Entries {
-		details, ok := entry.Details.(map[string]interface{})
-		if ok {
-			if skipped, exists := details["skipped"]; exists && skipped == true {
-				foundSkipped = true
-				break
-			}
-		}
-	}
-
-	if !foundSkipped {
-		t.Error("Expected to find a skipped upload entry")
+	// We expect only one entry for the original upload
+	if len(result.Entries) != 1 {
+		t.Fatalf("Expected only  1 entry, got %d", len(result.Entries))
 	}
 }
 

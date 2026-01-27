@@ -970,6 +970,7 @@
 .app::-webkit-scrollbar,
 .api-prompt-expanded-content::-webkit-scrollbar,
 .audit-entries-container::-webkit-scrollbar,
+.audit-action-filter-dropdown::-webkit-scrollbar,
 .file-queue::-webkit-scrollbar,
 .tag-input-tags::-webkit-scrollbar {
   width: 6px;
@@ -979,6 +980,7 @@
 .app::-webkit-scrollbar-track,
 .api-prompt-expanded-content::-webkit-scrollbar-track,
 .audit-entries-container::-webkit-scrollbar-track,
+.audit-action-filter-dropdown::-webkit-scrollbar-track,
 .file-queue::-webkit-scrollbar-track,
 .tag-input-tags::-webkit-scrollbar-track {
   background: var(--bg-tertiary);
@@ -988,6 +990,7 @@
 .app::-webkit-scrollbar-thumb,
 .api-prompt-expanded-content::-webkit-scrollbar-thumb,
 .audit-entries-container::-webkit-scrollbar-thumb,
+.audit-action-filter-dropdown::-webkit-scrollbar-thumb,
 .file-queue::-webkit-scrollbar-thumb,
 .tag-input-tags::-webkit-scrollbar-thumb {
   background: var(--terminal-green);
@@ -997,6 +1000,7 @@
 .app::-webkit-scrollbar-thumb:hover,
 .api-prompt-expanded-content::-webkit-scrollbar-thumb:hover,
 .audit-entries-container::-webkit-scrollbar-thumb:hover,
+.audit-action-filter-dropdown::-webkit-scrollbar-thumb:hover,
 .file-queue::-webkit-scrollbar-thumb:hover,
 .tag-input-tags::-webkit-scrollbar-thumb:hover {
   background: var(--terminal-green-bright, #00ff41);
@@ -3157,7 +3161,6 @@ tr:hover .cell-hash-actions {
 .audit-action-filter-dropdown {
   position: absolute;
   top: 100%;
-  max-height: 400px;
   left: 0;
   margin-top: var(--space-1);
   min-width: 200px;
@@ -3166,6 +3169,8 @@ tr:hover .cell-hash-actions {
   border-radius: var(--radius-md);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
   z-index: 1000;
+  max-height: 300px;
+  overflow-y: auto;
 }
 
 .audit-action-filter-option {

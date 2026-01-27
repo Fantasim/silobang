@@ -236,7 +236,7 @@
 }
 
 .users-page-detail {
-  overflow-y: auto;
+  overflow-y: visible;
 }
 
 .users-page-empty-state {
