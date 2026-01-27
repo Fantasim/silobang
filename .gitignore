@@ -7,3 +7,4 @@ npm-debug.log*
 ./web/dist
 meshbank
 *.zip
+CLAUDE.md
