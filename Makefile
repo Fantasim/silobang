@@ -1,11 +1,11 @@
 # ============================================================================
-# MeshBank - Unified Build System
+# SiloBang - Unified Build System
 # ============================================================================
 
 # Variables
 FRONTEND_DIR := web-src
 BUILD_DIR := web/dist
-BINARY_NAME := meshbank
+BINARY_NAME := silobang
 
 # Go variables
 GO := go
@@ -32,14 +32,15 @@ COLOR_BLUE := \033[34m
         test test-verbose test-coverage \
         clean clean-frontend clean-backend \
         run run-production \
-        fmt vet lint
+        fmt vet lint \
+        release release-status release-clean
 
 # ============================================================================
 # Default Target
 # ============================================================================
 
 help:
-	@echo "$(COLOR_BLUE)MeshBank - Build System$(COLOR_RESET)"
+	@echo "$(COLOR_BLUE)SiloBang - Build System$(COLOR_RESET)"
 	@echo ""
 	@echo "$(COLOR_GREEN)Setup:$(COLOR_RESET)"
 	@echo "  make install         - Install npm dependencies"
@@ -62,6 +63,11 @@ help:
 	@echo "$(COLOR_GREEN)Run:$(COLOR_RESET)"
 	@echo "  make run             - Build and run application"
 	@echo "  make run-production  - Run built binary (must build first)"
+	@echo ""
+	@echo "$(COLOR_GREEN)Release:$(COLOR_RESET)"
+	@echo "  make release         - Tag and push to trigger CI release"
+	@echo "  make release-status  - Check release workflow status"
+	@echo "  make release-clean   - Clean up failed release (tag + artifacts)"
 	@echo ""
 	@echo "$(COLOR_GREEN)Maintenance:$(COLOR_RESET)"
 	@echo "  make clean           - Remove all build artifacts"
@@ -87,7 +93,7 @@ install:
 # ============================================================================
 
 dev:
-	@echo "$(COLOR_BLUE)MeshBank Development Mode$(COLOR_RESET)"
+	@echo "$(COLOR_BLUE)SiloBang Development Mode$(COLOR_RESET)"
 	@echo ""
 	@echo "$(COLOR_YELLOW)Run these commands in separate terminals:$(COLOR_RESET)"
 	@echo ""
@@ -107,7 +113,7 @@ dev-frontend:
 
 dev-backend:
 	@echo "$(COLOR_BLUE)Starting Go backend...$(COLOR_RESET)"
-	@$(GO) run ./cmd/meshbank
+	@$(GO) run ./cmd/silobang
 
 # ============================================================================
 # Build Targets
@@ -126,7 +132,7 @@ build-frontend:
 
 build-backend: build-frontend
 	@echo "$(COLOR_BLUE)Building Go binary...$(COLOR_RESET)"
-	@$(GOBUILD) $(GOFLAGS) -o $(BINARY_NAME) ./cmd/meshbank
+	@$(GOBUILD) $(GOFLAGS) -o $(BINARY_NAME) ./cmd/silobang
 	@echo "$(COLOR_GREEN)✓ Backend built → ./$(BINARY_NAME)$(COLOR_RESET)"
 
 # ============================================================================
@@ -152,7 +158,7 @@ test-coverage:
 # ============================================================================
 
 run: build
-	@echo "$(COLOR_BLUE)Starting MeshBank...$(COLOR_RESET)"
+	@echo "$(COLOR_BLUE)Starting SiloBang...$(COLOR_RESET)"
 	@./$(BINARY_NAME)
 
 run-production:
@@ -160,7 +166,7 @@ run-production:
 		echo "$(COLOR_YELLOW)Error: Binary not found. Run 'make build' first.$(COLOR_RESET)"; \
 		exit 1; \
 	fi
-	@echo "$(COLOR_BLUE)Starting MeshBank (production)...$(COLOR_RESET)"
+	@echo "$(COLOR_BLUE)Starting SiloBang (production)...$(COLOR_RESET)"
 	@./$(BINARY_NAME)
 
 # ============================================================================
@@ -204,3 +210,16 @@ lint:
 	else \
 		echo "$(COLOR_YELLOW)golangci-lint not found. Install from: https://golangci-lint.run/$(COLOR_RESET)"; \
 	fi
+
+# ============================================================================
+# Release Targets
+# ============================================================================
+
+release:
+	@bash scripts/release.sh
+
+release-status:
+	@bash scripts/release-status.sh
+
+release-clean:
+	@bash scripts/release-clean.sh

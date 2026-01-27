@@ -5,11 +5,11 @@ import (
 	"sync"
 	"time"
 
-	"meshbank/internal/audit"
-	"meshbank/internal/config"
-	"meshbank/internal/logger"
-	"meshbank/internal/prompts"
-	"meshbank/internal/queries"
+	"silobang/internal/audit"
+	"silobang/internal/config"
+	"silobang/internal/logger"
+	"silobang/internal/prompts"
+	"silobang/internal/queries"
 )
 
 // =============================================================================
@@ -36,11 +36,16 @@ type mockAppState struct {
 }
 
 func newMockAppState() *mockAppState {
+	// Create a config with all defaults applied
+	cfg := &config.Config{}
+	cfg.ApplyDefaults()
+
 	return &mockAppState{
 		topicDBs:     make(map[string]*sql.DB),
 		topics:       make(map[string]struct{ healthy bool; errMsg string }),
 		topicWriteMu: make(map[string]*sync.Mutex),
 		startedAt:    time.Now(),
+		cfg:          cfg,
 	}
 }
 

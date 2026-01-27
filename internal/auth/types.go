@@ -1,5 +1,5 @@
 // Package auth provides authentication, authorization, and quota enforcement
-// for the meshbank system. It implements a grant-based permission model where
+// for the silobang system. It implements a grant-based permission model where
 // each user has per-action grants with optional JSON constraints and daily quotas.
 package auth
 

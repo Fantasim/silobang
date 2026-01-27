@@ -1,0 +1,187 @@
+/* ============================================================================
+   SMART TOOLTIP SYSTEM
+   Terminal-styled tooltips with automatic positioning and portal rendering
+   ============================================================================ */
+
+/* Tooltip trigger wrapper - should not affect layout */
+.smart-tooltip-trigger {
+  display: contents;
+}
+
+/* Smart Tooltip (rich version with stats) */
+.smart-tooltip {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--border-radius);
+  padding: 0;
+  min-width: 180px;
+  max-width: 320px;
+  z-index: var(--z-smart-tooltip);
+  backdrop-filter: blur(12px);
+  box-shadow:
+    0 4px 20px var(--black-alpha-60),
+    0 0 1px rgba(0, 255, 65, 0.3),
+    inset 0 1px 0 var(--white-alpha-2);
+  pointer-events: none;
+  font-family: var(--font-mono);
+}
+
+/* Arrow indicators via pseudo-elements */
+.smart-tooltip::before {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-dim);
+  transform: rotate(45deg);
+}
+
+.smart-tooltip-top::before {
+  bottom: -5px;
+  left: 50%;
+  margin-left: -4px;
+  border-top: none;
+  border-left: none;
+}
+
+.smart-tooltip-bottom::before {
+  top: -5px;
+  left: 50%;
+  margin-left: -4px;
+  border-bottom: none;
+  border-right: none;
+}
+
+.smart-tooltip-left::before {
+  right: -5px;
+  top: 50%;
+  margin-top: -4px;
+  border-bottom: none;
+  border-left: none;
+}
+
+.smart-tooltip-right::before {
+  left: -5px;
+  top: 50%;
+  margin-top: -4px;
+  border-top: none;
+  border-right: none;
+}
+
+/* Tooltip header */
+.smart-tooltip-header {
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-tertiary);
+  font-size: var(--font-lg);
+  color: var(--terminal-cyan);
+  letter-spacing: var(--tracking-wide);
+  font-weight: 600;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border-dim);
+}
+
+/* Tooltip description */
+.smart-tooltip-desc {
+  padding: var(--space-1-5) var(--space-3);
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-dim);
+  font-size: var(--font-base);
+  color: var(--text-secondary);
+  line-height: var(--leading-snug);
+}
+
+/* Tooltip content rows */
+.smart-tooltip-content {
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.smart-tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid color-mix(in srgb, var(--terminal-green) 5%, transparent);
+  font-size: var(--font-base);
+  gap: var(--space-4);
+}
+
+.smart-tooltip-row:last-child {
+  border-bottom: none;
+}
+
+.smart-tooltip-label {
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.smart-tooltip-value {
+  color: var(--terminal-green);
+  font-weight: 600;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Simple Smart Tooltip (text only) */
+.simple-smart-tooltip {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--border-radius);
+  padding: var(--space-1-5) var(--space-2-5);
+  z-index: var(--z-smart-tooltip);
+  backdrop-filter: blur(12px);
+  box-shadow:
+    0 4px 16px var(--black-alpha-50),
+    0 0 1px rgba(0, 255, 65, 0.3);
+  pointer-events: none;
+  font-family: var(--font-mono);
+  font-size: var(--font-base);
+  color: var(--text-primary);
+  white-space: normal;
+  max-width: 320px;
+  letter-spacing: var(--tracking-tight);
+}
+
+/* Arrow for simple tooltip */
+.simple-smart-tooltip::before {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-dim);
+  transform: rotate(45deg);
+}
+
+.simple-smart-tooltip-top::before {
+  bottom: -4px;
+  left: 50%;
+  margin-left: -3px;
+  border-top: none;
+  border-left: none;
+}
+
+.simple-smart-tooltip-bottom::before {
+  top: -4px;
+  left: 50%;
+  margin-left: -3px;
+  border-bottom: none;
+  border-right: none;
+}
+
+.simple-smart-tooltip-left::before {
+  right: -4px;
+  top: 50%;
+  margin-top: -3px;
+  border-bottom: none;
+  border-left: none;
+}
+
+.simple-smart-tooltip-right::before {
+  left: -4px;
+  top: 50%;
+  margin-top: -3px;
+  border-top: none;
+  border-right: none;
+}

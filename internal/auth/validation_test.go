@@ -3,7 +3,7 @@ package auth
 import (
 	"testing"
 
-	"meshbank/internal/constants"
+	"silobang/internal/constants"
 )
 
 func TestValidateConstraintsJSON_NilIsValid(t *testing.T) {

@@ -8,20 +8,22 @@ import (
 	"testing"
 	"time"
 
-	"meshbank/internal/config"
-	"meshbank/internal/constants"
-	"meshbank/internal/logger"
+	"silobang/internal/config"
+	"silobang/internal/constants"
+	"silobang/internal/logger"
 )
 
 // newMonitoringMock creates a mockAppState pre-configured for monitoring tests.
 func newMonitoringMock(workDir string) *mockAppState {
 	m := newMockAppState()
 	m.workingDir = workDir
-	m.cfg = &config.Config{
+	cfg := &config.Config{
 		WorkingDirectory: workDir,
 		Port:             constants.DefaultPort,
 		MaxDatSize:       constants.DefaultMaxDatSize,
 	}
+	cfg.ApplyDefaults()
+	m.cfg = cfg
 	m.log = logger.NewLogger(logger.LevelError)
 	m.startedAt = time.Now().Add(-10 * time.Second)
 	return m

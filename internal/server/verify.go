@@ -8,9 +8,9 @@ import (
 	"strings"
 	"time"
 
-	"meshbank/internal/audit"
-	"meshbank/internal/auth"
-	"meshbank/internal/constants"
+	"silobang/internal/audit"
+	"silobang/internal/auth"
+	"silobang/internal/constants"
 )
 
 // VerifyEvent represents an SSE event for verification progress

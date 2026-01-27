@@ -6,8 +6,8 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 
-	"meshbank/internal/constants"
-	"meshbank/internal/logger"
+	"silobang/internal/constants"
+	"silobang/internal/logger"
 )
 
 // setupEvaluator creates a PolicyEvaluator backed by an in-memory DB.

@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"meshbank/internal/constants"
+	"silobang/internal/constants"
 )
 
 // =============================================================================

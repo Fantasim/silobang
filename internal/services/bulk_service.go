@@ -4,10 +4,10 @@ import (
 	"database/sql"
 	"fmt"
 
-	"meshbank/internal/constants"
-	"meshbank/internal/database"
-	"meshbank/internal/logger"
-	"meshbank/internal/queries"
+	"silobang/internal/constants"
+	"silobang/internal/database"
+	"silobang/internal/logger"
+	"silobang/internal/queries"
 )
 
 // BulkService handles bulk download asset resolution and validation.
@@ -236,9 +236,10 @@ func (s *BulkService) ValidateAssetCount(count int) error {
 	if count == 0 {
 		return NewServiceError(constants.ErrCodeBulkDownloadEmpty, "no assets found matching the request")
 	}
-	if count > constants.BulkDownloadMaxAssets {
+	maxAssets := s.app.GetConfig().BulkDownload.MaxAssets
+	if count > maxAssets {
 		return NewServiceError(constants.ErrCodeBulkDownloadTooLarge,
-			fmt.Sprintf("too many assets: %d (max: %d)", count, constants.BulkDownloadMaxAssets))
+			fmt.Sprintf("too many assets: %d (max: %d)", count, maxAssets))
 	}
 	return nil
 }

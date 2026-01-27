@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	"meshbank/internal/constants"
-	"meshbank/internal/storage"
+	"silobang/internal/constants"
+	"silobang/internal/storage"
 )
 
 // VerifyEvent represents an SSE event from the verify endpoint

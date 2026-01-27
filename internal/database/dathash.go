@@ -2,7 +2,7 @@ package database
 
 import (
 	"database/sql"
-	"meshbank/internal/storage"
+	"silobang/internal/storage"
 	"os"
 	"path/filepath"
 	"time"

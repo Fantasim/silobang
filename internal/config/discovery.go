@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"regexp"
 
-	"meshbank/internal/constants"
-	"meshbank/internal/database"
+	"silobang/internal/constants"
+	"silobang/internal/database"
 )
 
 type TopicInfo struct {

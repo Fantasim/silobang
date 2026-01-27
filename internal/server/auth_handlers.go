@@ -6,10 +6,10 @@ import (
 	"strconv"
 	"strings"
 
-	"meshbank/internal/audit"
-	"meshbank/internal/auth"
-	"meshbank/internal/constants"
-	"meshbank/internal/services"
+	"silobang/internal/audit"
+	"silobang/internal/auth"
+	"silobang/internal/constants"
+	"silobang/internal/services"
 )
 
 // =============================================================================

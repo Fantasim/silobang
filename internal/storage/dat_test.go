@@ -1,7 +1,7 @@
 package storage
 
 import (
-	"meshbank/internal/constants"
+	"silobang/internal/constants"
 	"os"
 	"path/filepath"
 	"testing"
@@ -9,7 +9,7 @@ import (
 
 func TestListDatFiles(t *testing.T) {
 	// Create temp directory
-	tmpDir, err := os.MkdirTemp("", "meshbank-test-*")
+	tmpDir, err := os.MkdirTemp("", "silobang-test-*")
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
 	}
@@ -42,7 +42,7 @@ func TestListDatFiles(t *testing.T) {
 
 func TestGetNextDatFilename(t *testing.T) {
 	// Create temp directory
-	tmpDir, err := os.MkdirTemp("", "meshbank-test-*")
+	tmpDir, err := os.MkdirTemp("", "silobang-test-*")
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
 	}
@@ -72,7 +72,7 @@ func TestGetNextDatFilename(t *testing.T) {
 
 func TestGetCurrentDatFile(t *testing.T) {
 	// Create temp directory
-	tmpDir, err := os.MkdirTemp("", "meshbank-test-*")
+	tmpDir, err := os.MkdirTemp("", "silobang-test-*")
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
 	}
@@ -105,7 +105,7 @@ func TestGetCurrentDatFile(t *testing.T) {
 
 func TestDetermineTargetDatFile(t *testing.T) {
 	// Create temp directory
-	tmpDir, err := os.MkdirTemp("", "meshbank-test-*")
+	tmpDir, err := os.MkdirTemp("", "silobang-test-*")
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
 	}
@@ -146,7 +146,7 @@ func TestDetermineTargetDatFile(t *testing.T) {
 
 func TestGetTotalDatSize(t *testing.T) {
 	// Create temp directory
-	tmpDir, err := os.MkdirTemp("", "meshbank-test-*")
+	tmpDir, err := os.MkdirTemp("", "silobang-test-*")
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
 	}
@@ -170,7 +170,7 @@ func TestGetTotalDatSize(t *testing.T) {
 
 func TestCountDatFiles(t *testing.T) {
 	// Create temp directory
-	tmpDir, err := os.MkdirTemp("", "meshbank-test-*")
+	tmpDir, err := os.MkdirTemp("", "silobang-test-*")
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
 	}
@@ -216,7 +216,7 @@ func TestFormatDatFilename(t *testing.T) {
 
 func TestMixedDatFileFormats(t *testing.T) {
 	// Test backward compatibility: system should handle mixed 3-digit and 6-digit files
-	tmpDir, err := os.MkdirTemp("", "meshbank-test-*")
+	tmpDir, err := os.MkdirTemp("", "silobang-test-*")
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
 	}

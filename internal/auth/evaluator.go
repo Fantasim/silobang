@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strings"
 
-	"meshbank/internal/constants"
-	"meshbank/internal/logger"
+	"silobang/internal/constants"
+	"silobang/internal/logger"
 )
 
 // PolicyEvaluator evaluates authorization policies for requests.

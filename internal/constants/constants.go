@@ -1,5 +1,11 @@
 package constants
 
+// Application
+const (
+	AppName        = "silobang"
+	AppDisplayName = "SiloBang"
+)
+
 // Storage
 const (
 	DefaultMaxDatSize   = 1073741824   // 1GB in bytes
@@ -25,7 +31,7 @@ const (
 
 // Paths
 const (
-	ConfigDir      = ".config/meshbank"
+	ConfigDir      = ".config/silobang"
 	ConfigFile     = "config.yaml"
 	InternalDir    = ".internal"
 	OrchestratorDB = "orchestrator.db"
@@ -59,9 +65,7 @@ const (
 
 // API
 const (
-	DefaultPort       = 2369
-	DefaultQueryLimit = 1000
-	MaxQueryLimit     = 10000
+	DefaultPort = 2369
 )
 
 // Query Preset Defaults

@@ -3,8 +3,8 @@ package services
 import (
 	"testing"
 
-	"meshbank/internal/constants"
-	"meshbank/internal/logger"
+	"silobang/internal/constants"
+	"silobang/internal/logger"
 )
 
 func TestNewBulkService(t *testing.T) {

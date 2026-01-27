@@ -10,7 +10,7 @@ import (
 	"github.com/zeebo/blake3"
 	"golang.org/x/crypto/bcrypt"
 
-	"meshbank/internal/constants"
+	"silobang/internal/constants"
 )
 
 // base62Alphabet is used for human-friendly token encoding (no special chars).

@@ -9,11 +9,11 @@ import (
 	"regexp"
 	"strings"
 
-	"meshbank/internal/audit"
-	"meshbank/internal/auth"
-	"meshbank/internal/constants"
-	"meshbank/internal/sanitize"
-	"meshbank/internal/services"
+	"silobang/internal/audit"
+	"silobang/internal/auth"
+	"silobang/internal/constants"
+	"silobang/internal/sanitize"
+	"silobang/internal/services"
 )
 
 var topicNameRegex = regexp.MustCompile(constants.TopicNameRegex)

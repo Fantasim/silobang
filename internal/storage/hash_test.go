@@ -93,7 +93,7 @@ func TestComputeRunningHashInvalidInput(t *testing.T) {
 
 func TestReplayRunningHash(t *testing.T) {
 	// Create temp directory
-	tmpDir, err := os.MkdirTemp("", "meshbank-hash-test-*")
+	tmpDir, err := os.MkdirTemp("", "silobang-hash-test-*")
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
 	}
@@ -138,7 +138,7 @@ func TestReplayRunningHash(t *testing.T) {
 
 func TestReplayRunningHashEmptyFile(t *testing.T) {
 	// Create temp directory
-	tmpDir, err := os.MkdirTemp("", "meshbank-hash-test-*")
+	tmpDir, err := os.MkdirTemp("", "silobang-hash-test-*")
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
 	}
@@ -172,7 +172,7 @@ func TestReplayRunningHashEmptyFile(t *testing.T) {
 
 func TestVerifyRunningHash(t *testing.T) {
 	// Create temp directory
-	tmpDir, err := os.MkdirTemp("", "meshbank-hash-test-*")
+	tmpDir, err := os.MkdirTemp("", "silobang-hash-test-*")
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
 	}
@@ -223,7 +223,7 @@ func TestVerifyRunningHash(t *testing.T) {
 
 func TestRunningHashChainIntegrity(t *testing.T) {
 	// Create temp directory
-	tmpDir, err := os.MkdirTemp("", "meshbank-hash-test-*")
+	tmpDir, err := os.MkdirTemp("", "silobang-hash-test-*")
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
 	}

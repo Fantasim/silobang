@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"meshbank/internal/constants"
+	"silobang/internal/constants"
 )
 
 // BlobEntry represents a single asset entry in a .dat file

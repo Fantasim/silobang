@@ -7,10 +7,10 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 
-	"meshbank/internal/database"
-	"meshbank/internal/logger"
-	"meshbank/internal/queries"
-	"meshbank/internal/storage"
+	"silobang/internal/database"
+	"silobang/internal/logger"
+	"silobang/internal/queries"
+	"silobang/internal/storage"
 )
 
 func TestGetTopicStats_ReturnsNumbers(t *testing.T) {

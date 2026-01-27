@@ -8,11 +8,11 @@ import (
 	"testing"
 	"time"
 
-	"meshbank/internal/config"
-	"meshbank/internal/constants"
-	"meshbank/internal/logger"
-	"meshbank/internal/queries"
-	"meshbank/internal/server"
+	"silobang/internal/config"
+	"silobang/internal/constants"
+	"silobang/internal/logger"
+	"silobang/internal/queries"
+	"silobang/internal/server"
 )
 
 // StartTestServerWithLogging creates a test server with debug level logging enabled
@@ -21,12 +21,12 @@ func StartTestServerWithLogging(t *testing.T) *TestServer {
 	t.Helper()
 
 	// Create temp directories
-	workDir, err := os.MkdirTemp("", "meshbank-test-work-*")
+	workDir, err := os.MkdirTemp("", "silobang-test-work-*")
 	if err != nil {
 		t.Fatalf("failed to create work dir: %v", err)
 	}
 
-	configDir, err := os.MkdirTemp("", "meshbank-test-config-*")
+	configDir, err := os.MkdirTemp("", "silobang-test-config-*")
 	if err != nil {
 		os.RemoveAll(workDir)
 		t.Fatalf("failed to create config dir: %v", err)
@@ -38,6 +38,7 @@ func StartTestServerWithLogging(t *testing.T) *TestServer {
 		Port:             0,
 		MaxDatSize:       constants.DefaultMaxDatSize,
 	}
+	cfg.ApplyDefaults()
 
 	// Use INFO level so we can see logs being written to files
 	log := logger.NewLoggerWithOptions(logger.LoggerOptions{
@@ -328,7 +329,7 @@ func TestFileLoggingWorkDirChange(t *testing.T) {
 	ts := StartTestServerWithLogging(t)
 
 	// Create a second work directory
-	workDir2, err := os.MkdirTemp("", "meshbank-test-work2-*")
+	workDir2, err := os.MkdirTemp("", "silobang-test-work2-*")
 	if err != nil {
 		t.Fatalf("Failed to create second work dir: %v", err)
 	}

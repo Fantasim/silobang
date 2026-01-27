@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"meshbank/internal/constants"
+	"silobang/internal/constants"
 )
 
 const (

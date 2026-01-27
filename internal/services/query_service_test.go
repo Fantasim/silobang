@@ -3,9 +3,9 @@ package services
 import (
 	"testing"
 
-	"meshbank/internal/constants"
-	"meshbank/internal/logger"
-	"meshbank/internal/queries"
+	"silobang/internal/constants"
+	"silobang/internal/logger"
+	"silobang/internal/queries"
 )
 
 func TestNewQueryService(t *testing.T) {

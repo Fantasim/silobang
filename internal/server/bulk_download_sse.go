@@ -15,10 +15,10 @@ import (
 	"sync"
 	"time"
 
-	"meshbank/internal/audit"
-	"meshbank/internal/auth"
-	"meshbank/internal/constants"
-	"meshbank/internal/services"
+	"silobang/internal/audit"
+	"silobang/internal/auth"
+	"silobang/internal/constants"
+	"silobang/internal/services"
 )
 
 // BulkDownloadEvent represents an SSE event for bulk download progress
@@ -90,14 +90,15 @@ type BulkDownloadSession struct {
 
 // DownloadSessionManager manages active download sessions with cleanup
 type DownloadSessionManager struct {
-	sessions  map[string]*BulkDownloadSession
-	mu        sync.RWMutex
-	tempDir   string
-	stopClean chan struct{}
+	sessions   map[string]*BulkDownloadSession
+	mu         sync.RWMutex
+	tempDir    string
+	stopClean  chan struct{}
+	sessionTTL time.Duration
 }
 
 // NewDownloadSessionManager creates a new session manager with cleanup goroutine
-func NewDownloadSessionManager(workingDir string) *DownloadSessionManager {
+func NewDownloadSessionManager(workingDir string, sessionTTLMins int) *DownloadSessionManager {
 	// Clean up leftover files from previous runs
 	CleanBulkDownloadDirectory(workingDir)
 
@@ -107,9 +108,10 @@ func NewDownloadSessionManager(workingDir string) *DownloadSessionManager {
 	os.MkdirAll(tempDir, constants.DirPermissions)
 
 	m := &DownloadSessionManager{
-		sessions:  make(map[string]*BulkDownloadSession),
-		tempDir:   tempDir,
-		stopClean: make(chan struct{}),
+		sessions:   make(map[string]*BulkDownloadSession),
+		tempDir:    tempDir,
+		stopClean:  make(chan struct{}),
+		sessionTTL: time.Duration(sessionTTLMins) * time.Minute,
 	}
 
 	// Start cleanup goroutine
@@ -143,11 +145,10 @@ func (m *DownloadSessionManager) cleanupExpiredSessions() {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
-	ttl := time.Duration(constants.BulkDownloadSessionTTLMins) * time.Minute
 	now := time.Now()
 
 	for id, session := range m.sessions {
-		if now.Sub(session.CreatedAt) > ttl {
+		if now.Sub(session.CreatedAt) > m.sessionTTL {
 			// Remove ZIP file if exists
 			if session.ZIPPath != "" {
 				os.Remove(session.ZIPPath)
@@ -332,7 +333,7 @@ func (s *Server) handleBulkDownloadSSE(w http.ResponseWriter, r *http.Request) {
 
 	// Ensure download manager is initialized
 	if s.downloadManager == nil {
-		s.downloadManager = NewDownloadSessionManager(s.app.Config.WorkingDirectory)
+		s.downloadManager = NewDownloadSessionManager(s.app.Config.WorkingDirectory, s.app.Config.BulkDownload.SessionTTLMins)
 	}
 
 	// Parse request from query params
@@ -555,7 +556,7 @@ func (s *Server) generateZIPWithProgress(
 	zipFile.Close()
 
 	duration := time.Since(startTime)
-	expiresAt := time.Now().Add(time.Duration(constants.BulkDownloadSessionTTLMins) * time.Minute)
+	expiresAt := time.Now().Add(s.downloadManager.sessionTTL)
 
 	// Update session as complete
 	completedAt := time.Now()
@@ -650,8 +651,7 @@ func (s *Server) handleBulkDownloadFetch(w http.ResponseWriter, r *http.Request)
 	}
 
 	// Check if expired
-	ttl := time.Duration(constants.BulkDownloadSessionTTLMins) * time.Minute
-	if time.Since(session.CreatedAt) > ttl {
+	if time.Since(session.CreatedAt) > s.downloadManager.sessionTTL {
 		s.downloadManager.RemoveSession(downloadID)
 		WriteError(w, http.StatusGone, "Download session has expired", constants.ErrCodeDownloadSessionExpired)
 		return

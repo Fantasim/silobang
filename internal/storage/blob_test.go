@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"meshbank/internal/constants"
+	"silobang/internal/constants"
 )
 
 func TestHeaderSerializationRoundtrip(t *testing.T) {
@@ -46,14 +46,14 @@ func TestHeaderSerializationRoundtrip(t *testing.T) {
 
 func TestAppendAndReadEntry(t *testing.T) {
 	// Create temp directory
-	tmpDir, err := os.MkdirTemp("", "meshbank-test-*")
+	tmpDir, err := os.MkdirTemp("", "silobang-test-*")
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
 	}
 	defer os.RemoveAll(tmpDir)
 
 	datPath := filepath.Join(tmpDir, FormatDatFilename(1))
-	testData := []byte("Hello, MeshBank!")
+	testData := []byte("Hello, SiloBang!")
 	hash := ComputeBlake3Hex(testData)
 
 	// Append entry
@@ -86,7 +86,7 @@ func TestAppendAndReadEntry(t *testing.T) {
 
 func TestMultipleEntries(t *testing.T) {
 	// Create temp directory
-	tmpDir, err := os.MkdirTemp("", "meshbank-test-*")
+	tmpDir, err := os.MkdirTemp("", "silobang-test-*")
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
 	}
@@ -139,7 +139,7 @@ func TestMultipleEntries(t *testing.T) {
 
 func TestScanEntries(t *testing.T) {
 	// Create temp directory
-	tmpDir, err := os.MkdirTemp("", "meshbank-test-*")
+	tmpDir, err := os.MkdirTemp("", "silobang-test-*")
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
 	}
@@ -190,7 +190,7 @@ func TestInvalidHash(t *testing.T) {
 
 func TestValidateEntry(t *testing.T) {
 	// Create temp directory
-	tmpDir, err := os.MkdirTemp("", "meshbank-test-*")
+	tmpDir, err := os.MkdirTemp("", "silobang-test-*")
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
 	}

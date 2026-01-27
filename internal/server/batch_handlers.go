@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"net/http"
 
-	"meshbank/internal/audit"
-	"meshbank/internal/auth"
-	"meshbank/internal/constants"
-	"meshbank/internal/database"
-	"meshbank/internal/queries"
+	"silobang/internal/audit"
+	"silobang/internal/auth"
+	"silobang/internal/constants"
+	"silobang/internal/database"
+	"silobang/internal/queries"
 )
 
 // =============================================================================
@@ -88,7 +88,7 @@ func (s *Server) handleBatchMetadata(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(req.Operations) > constants.BatchMetadataMaxOperations {
+	if len(req.Operations) > s.app.Config.Batch.MaxOperations {
 		WriteError(w, http.StatusBadRequest, "Too many operations", constants.ErrCodeBatchTooManyOperations)
 		return
 	}
@@ -180,7 +180,7 @@ func (s *Server) handleBatchMetadata(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 
-		results, err := database.ExecuteBatchMetadataTx(tx, group.Operations)
+		results, err := database.ExecuteBatchMetadataTx(tx, group.Operations, s.app.Config.Metadata.MaxValueBytes)
 		if err != nil {
 			tx.Rollback()
 			s.logger.Error("Batch execution failed for topic %s: %v", group.Topic, err)
@@ -380,8 +380,9 @@ func (s *Server) handleApplyMetadata(w http.ResponseWriter, r *http.Request) {
 			bytes, _ := json.Marshal(v)
 			valueStr = string(bytes)
 		}
-		if len(valueStr) > constants.MaxMetadataValueBytes {
-			WriteError(w, http.StatusBadRequest, fmt.Sprintf("value exceeds maximum size of %d bytes", constants.MaxMetadataValueBytes), constants.ErrCodeMetadataValueTooLong)
+		maxValueBytes := s.app.Config.Metadata.MaxValueBytes
+		if len(valueStr) > maxValueBytes {
+			WriteError(w, http.StatusBadRequest, fmt.Sprintf("value exceeds maximum size of %d bytes", maxValueBytes), constants.ErrCodeMetadataValueTooLong)
 			return
 		}
 	}
@@ -452,7 +453,7 @@ func (s *Server) handleApplyMetadata(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 
-		results, err := database.ExecuteBatchMetadataTx(tx, group.Operations)
+		results, err := database.ExecuteBatchMetadataTx(tx, group.Operations, s.app.Config.Metadata.MaxValueBytes)
 		if err != nil {
 			tx.Rollback()
 			for _, op := range group.Operations {

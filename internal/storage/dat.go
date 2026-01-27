@@ -8,7 +8,7 @@ import (
 	"sort"
 	"strconv"
 
-	"meshbank/internal/constants"
+	"silobang/internal/constants"
 )
 
 var datFileRegex = regexp.MustCompile(`^(\d{3,})\.dat$`)

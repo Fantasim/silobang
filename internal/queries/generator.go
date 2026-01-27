@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 
 	"gopkg.in/yaml.v3"
-	"meshbank/internal/constants"
-	"meshbank/internal/logger"
+	"silobang/internal/constants"
+	"silobang/internal/logger"
 )
 
 // GenerateDefaultQueries creates all default query YAML files in the queries directory

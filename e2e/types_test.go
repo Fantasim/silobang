@@ -58,6 +58,7 @@ type StorageSummary struct {
 
 // VersionInfo provides version and format information
 type VersionInfo struct {
+	AppVersion  string `json:"app_version"`
 	BlobVersion uint16 `json:"blob_version"`
 	HeaderSize  int    `json:"header_size"`
 }

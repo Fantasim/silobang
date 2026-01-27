@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"meshbank/internal/constants"
+	"silobang/internal/constants"
 )
 
 func TestHashPassword(t *testing.T) {

@@ -7,9 +7,9 @@ import (
 	"strconv"
 	"time"
 
-	"meshbank/internal/audit"
-	"meshbank/internal/auth"
-	"meshbank/internal/constants"
+	"silobang/internal/audit"
+	"silobang/internal/auth"
+	"silobang/internal/constants"
 )
 
 // handleAuditQuery handles GET /api/audit - Query audit logs

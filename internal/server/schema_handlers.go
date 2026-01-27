@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strings"
 
-	"meshbank/internal/constants"
+	"silobang/internal/constants"
 )
 
 // =============================================================================

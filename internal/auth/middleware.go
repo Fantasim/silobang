@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"meshbank/internal/constants"
-	"meshbank/internal/logger"
+	"silobang/internal/constants"
+	"silobang/internal/logger"
 )
 
 // contextKey is an unexported type for context keys in this package.

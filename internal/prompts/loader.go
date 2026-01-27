@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	"gopkg.in/yaml.v3"
-	"meshbank/internal/constants"
-	"meshbank/internal/logger"
+	"silobang/internal/constants"
+	"silobang/internal/logger"
 )
 
 // GetPromptsDir returns the path to the prompts directory for a working directory

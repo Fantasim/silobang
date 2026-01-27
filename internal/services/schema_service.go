@@ -3,9 +3,9 @@ package services
 import (
 	"fmt"
 
-	"meshbank/internal/constants"
-	"meshbank/internal/logger"
-	"meshbank/internal/prompts"
+	"silobang/internal/constants"
+	"silobang/internal/logger"
+	"silobang/internal/prompts"
 )
 
 // SchemaService handles API schema and prompts operations.

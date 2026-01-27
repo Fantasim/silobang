@@ -1,0 +1,40 @@
+SiloBang v{{VERSION}}
+
+Build Information
+=================
+Version:     {{VERSION}}
+Platform:    {{PLATFORM}}
+Build Date:  {{BUILD_DATE}}
+Go Version:  {{GO_VERSION}}
+Commit:      {{COMMIT}}
+Commit Full: {{COMMIT_FULL}}
+Repository:  {{REPO_URL}}
+
+Platforms Built
+===============
+- Linux AMD64 (x86_64)
+- Linux ARM64 (aarch64)
+- macOS AMD64 (Intel x86_64)
+- macOS ARM64 (Apple Silicon)
+- Windows AMD64 (x86_64)
+
+Build Process
+=============
+1. Frontend: Preact/Vite build (npm run build)
+2. Embedding: Go embed (web/dist/ embedded into binary)
+3. Compilation: CGO_ENABLED=1 with platform-specific cross-compiler
+4. Optimization: -ldflags="-s -w" (stripped, no debug symbols)
+5. Packaging: tar.gz (Unix) or zip (Windows) with README and BUILD_INFO
+
+Verify Authenticity
+===================
+Repository: {{REPO_URL}}
+Commit:     {{REPO_URL}}/commit/{{COMMIT_FULL}}
+
+Clone, checkout the commit, and build locally:
+  git clone {{REPO_URL}}.git
+  cd silobang
+  git checkout {{COMMIT_FULL}}
+  make build
+
+Compare SHA256 checksums with SHA256SUMS.txt from the release.

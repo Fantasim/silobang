@@ -3,8 +3,8 @@ package auth
 import (
 	"fmt"
 
-	"meshbank/internal/constants"
-	"meshbank/internal/logger"
+	"silobang/internal/constants"
+	"silobang/internal/logger"
 )
 
 // BootstrapResult contains the credentials generated during bootstrap.

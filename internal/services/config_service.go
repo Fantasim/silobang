@@ -7,14 +7,14 @@ import (
 	"path/filepath"
 	"regexp"
 
-	"meshbank/internal/audit"
-	"meshbank/internal/config"
-	"meshbank/internal/constants"
-	"meshbank/internal/database"
-	"meshbank/internal/logger"
-	"meshbank/internal/prompts"
-	"meshbank/internal/queries"
-	"meshbank/internal/storage"
+	"silobang/internal/audit"
+	"silobang/internal/config"
+	"silobang/internal/constants"
+	"silobang/internal/database"
+	"silobang/internal/logger"
+	"silobang/internal/prompts"
+	"silobang/internal/queries"
+	"silobang/internal/storage"
 )
 
 var topicNameRegex = regexp.MustCompile(constants.TopicNameRegex)
@@ -35,10 +35,16 @@ func NewConfigService(app AppState, log *logger.Logger) *ConfigService {
 
 // ConfigStatus represents the current configuration state.
 type ConfigStatus struct {
-	Configured       bool   `json:"configured"`
-	WorkingDirectory string `json:"working_directory"`
-	Port             int    `json:"port"`
-	MaxDatSize       int64  `json:"max_dat_size"`
+	Configured       bool                    `json:"configured"`
+	WorkingDirectory string                  `json:"working_directory"`
+	Port             int                     `json:"port"`
+	MaxDatSize       int64                   `json:"max_dat_size"`
+	Auth             config.AuthConfig       `json:"auth"`
+	BulkDownload     config.BulkDownloadConfig `json:"bulk_download"`
+	Audit            config.AuditConfig      `json:"audit"`
+	Metadata         config.MetadataConfig   `json:"metadata"`
+	Batch            config.BatchConfig      `json:"batch"`
+	Monitoring       config.MonitoringConfig `json:"monitoring"`
 }
 
 // GetStatus returns the current configuration status.
@@ -49,6 +55,12 @@ func (s *ConfigService) GetStatus() *ConfigStatus {
 		WorkingDirectory: cfg.WorkingDirectory,
 		Port:             cfg.Port,
 		MaxDatSize:       cfg.MaxDatSize,
+		Auth:             cfg.Auth,
+		BulkDownload:     cfg.BulkDownload,
+		Audit:            cfg.Audit,
+		Metadata:         cfg.Metadata,
+		Batch:            cfg.Batch,
+		Monitoring:       cfg.Monitoring,
 	}
 }
 
@@ -400,7 +412,8 @@ func (s *ConfigService) SetAuditLogger() *audit.Logger {
 	if orchDB == nil {
 		return nil
 	}
-	return audit.NewLogger(orchDB)
+	cfg := s.app.GetConfig()
+	return audit.NewLogger(orchDB, cfg.Audit.MaxLogSizeBytes, cfg.Audit.PurgePercentage)
 }
 
 // wrapTopicError wraps topic-related errors with appropriate service errors.

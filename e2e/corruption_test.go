@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"meshbank/internal/storage"
+	"silobang/internal/storage"
 )
 
 func TestCorruptionDetection(t *testing.T) {

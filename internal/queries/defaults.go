@@ -1,6 +1,6 @@
 package queries
 
-import "meshbank/internal/constants"
+import "silobang/internal/constants"
 
 // GetDefaultStats returns the embedded default topic stats
 func GetDefaultStats() []TopicStat {

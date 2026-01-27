@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"meshbank/internal/constants"
+	"silobang/internal/constants"
 )
 
 // BatchOperation represents a single operation in a batch request
@@ -73,7 +73,7 @@ func GroupOperationsByTopic(orchestratorDB *sql.DB, operations []BatchOperation)
 
 // ExecuteBatchMetadataTx executes a batch of metadata operations within a single transaction
 // All operations succeed or fail together (atomic per topic)
-func ExecuteBatchMetadataTx(tx *sql.Tx, operations []BatchOperation) ([]BatchOperationResult, error) {
+func ExecuteBatchMetadataTx(tx *sql.Tx, operations []BatchOperation, maxValueBytes int) ([]BatchOperationResult, error) {
 	results := make([]BatchOperationResult, 0, len(operations))
 	timestamp := time.Now().Unix()
 
@@ -122,11 +122,11 @@ func ExecuteBatchMetadataTx(tx *sql.Tx, operations []BatchOperation) ([]BatchOpe
 		}
 
 		// Validate value length for set operations
-		if op.Op == constants.BatchMetadataOpSet && len(op.Value) > constants.MaxMetadataValueBytes {
+		if op.Op == constants.BatchMetadataOpSet && len(op.Value) > maxValueBytes {
 			results = append(results, BatchOperationResult{
 				Hash:    op.Hash,
 				Success: false,
-				Error:   fmt.Sprintf("value exceeds maximum size of %d bytes", constants.MaxMetadataValueBytes),
+				Error:   fmt.Sprintf("value exceeds maximum size of %d bytes", maxValueBytes),
 			})
 			continue
 		}

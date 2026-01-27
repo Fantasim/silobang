@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"meshbank/internal/constants"
-	"meshbank/internal/services"
+	"silobang/internal/constants"
+	"silobang/internal/services"
 )
 
 // APIError represents a standard error response

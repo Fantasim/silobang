@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"meshbank/internal/constants"
+	"silobang/internal/constants"
 )
 
 // collectAuditActionConstants uses reflection to find all AuditAction* string

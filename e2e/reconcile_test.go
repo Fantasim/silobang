@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"meshbank/internal/constants"
+	"silobang/internal/constants"
 
 	_ "github.com/mattn/go-sqlite3"
 )

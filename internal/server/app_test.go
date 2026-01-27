@@ -4,8 +4,8 @@ import (
 	"sync"
 	"testing"
 
-	"meshbank/internal/config"
-	"meshbank/internal/logger"
+	"silobang/internal/config"
+	"silobang/internal/logger"
 )
 
 func newTestApp() *App {

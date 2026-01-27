@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"meshbank/internal/audit"
-	"meshbank/internal/constants"
+	"silobang/internal/audit"
+	"silobang/internal/constants"
 )
 
 // TestConcurrentSubscribeUnsubscribe verifies no race conditions or panics

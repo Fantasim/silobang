@@ -6,9 +6,9 @@ import (
 	"regexp"
 	"time"
 
-	"meshbank/internal/auth"
-	"meshbank/internal/constants"
-	"meshbank/internal/logger"
+	"silobang/internal/auth"
+	"silobang/internal/constants"
+	"silobang/internal/logger"
 )
 
 var usernameRegex = regexp.MustCompile(constants.AuthUsernameRegex)
@@ -30,7 +30,8 @@ func NewAuthService(app AppState, log *logger.Logger) *AuthService {
 		return nil
 	}
 
-	store := auth.NewStore(db)
+	cfg := app.GetConfig()
+	store := auth.NewStore(db, cfg.Auth.MaxLoginAttempts, cfg.Auth.LockoutDurationMins, cfg.Auth.SessionDuration())
 	evaluator := auth.NewPolicyEvaluator(store, log)
 
 	svc := &AuthService{

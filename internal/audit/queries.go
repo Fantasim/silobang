@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"meshbank/internal/constants"
+	"silobang/internal/constants"
 )
 
 // QueryOptions for filtering audit logs

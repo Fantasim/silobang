@@ -5,16 +5,16 @@ import (
 	"path/filepath"
 	"testing"
 
-	"meshbank/internal/constants"
-	"meshbank/internal/logger"
-	"meshbank/internal/queries"
+	"silobang/internal/constants"
+	"silobang/internal/logger"
+	"silobang/internal/queries"
 )
 
 // TestQueriesDirAutoGeneration verifies that the queries directory and files
 // are automatically generated when they don't exist
 func TestQueriesDirAutoGeneration(t *testing.T) {
 	// Create a temp working directory
-	workDir, err := os.MkdirTemp("", "meshbank-queries-test-*")
+	workDir, err := os.MkdirTemp("", "silobang-queries-test-*")
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
 	}
@@ -73,7 +73,7 @@ func TestQueriesDirAutoGeneration(t *testing.T) {
 // from the split file structure
 func TestQueriesLoadFromSplitFiles(t *testing.T) {
 	// Create a temp working directory
-	workDir, err := os.MkdirTemp("", "meshbank-queries-test-*")
+	workDir, err := os.MkdirTemp("", "silobang-queries-test-*")
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
 	}
@@ -139,7 +139,7 @@ func TestQueriesLoadFromSplitFiles(t *testing.T) {
 // TestQueriesImmutability verifies that generated files match the embedded defaults
 func TestQueriesImmutability(t *testing.T) {
 	// Create a temp working directory
-	workDir, err := os.MkdirTemp("", "meshbank-queries-test-*")
+	workDir, err := os.MkdirTemp("", "silobang-queries-test-*")
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
 	}
@@ -196,7 +196,7 @@ func TestQueriesImmutability(t *testing.T) {
 // TestQueriesValidation verifies that invalid files are rejected with proper errors
 func TestQueriesValidation(t *testing.T) {
 	// Create a temp working directory
-	workDir, err := os.MkdirTemp("", "meshbank-queries-test-*")
+	workDir, err := os.MkdirTemp("", "silobang-queries-test-*")
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
 	}
@@ -240,7 +240,7 @@ func TestQueriesValidation(t *testing.T) {
 // TestQueriesCustomQuery verifies that custom user queries work alongside defaults
 func TestQueriesCustomQuery(t *testing.T) {
 	// Create a temp working directory
-	workDir, err := os.MkdirTemp("", "meshbank-queries-test-*")
+	workDir, err := os.MkdirTemp("", "silobang-queries-test-*")
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
 	}
@@ -306,7 +306,7 @@ params:
 // TestQueriesMovability verifies that queries work when the project folder is moved
 func TestQueriesMovability(t *testing.T) {
 	// Create first temp working directory
-	workDir1, err := os.MkdirTemp("", "meshbank-queries-test-src-*")
+	workDir1, err := os.MkdirTemp("", "silobang-queries-test-src-*")
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
 	}
@@ -326,7 +326,7 @@ func TestQueriesMovability(t *testing.T) {
 	}
 
 	// Create second temp working directory (simulating move)
-	workDir2, err := os.MkdirTemp("", "meshbank-queries-test-dst-*")
+	workDir2, err := os.MkdirTemp("", "silobang-queries-test-dst-*")
 	if err != nil {
 		t.Fatalf("failed to create second temp dir: %v", err)
 	}
@@ -367,7 +367,7 @@ func TestQueriesMovability(t *testing.T) {
 // TestLoadQueriesIntegration tests the full LoadQueries function
 func TestLoadQueriesIntegration(t *testing.T) {
 	// Create a temp working directory
-	workDir, err := os.MkdirTemp("", "meshbank-queries-test-*")
+	workDir, err := os.MkdirTemp("", "silobang-queries-test-*")
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
 	}

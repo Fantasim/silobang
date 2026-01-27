@@ -93,7 +93,7 @@ export function SetupPage() {
   return (
     <div class="setup-page">
       <div class="setup-card">
-        <h1 class="setup-title">MeshBank</h1>
+        <h1 class="setup-title">SiloBang</h1>
         <p class="setup-subtitle">
           Content-addressed asset storage for 3D models
         </p>

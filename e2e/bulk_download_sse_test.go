@@ -11,7 +11,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"meshbank/internal/constants"
+	"silobang/internal/constants"
 )
 
 // TestBulkDownloadSSE_BasicFlow tests the complete SSE flow with query mode

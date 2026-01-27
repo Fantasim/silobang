@@ -4,8 +4,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"meshbank/internal/constants"
-	"meshbank/internal/storage"
+	"silobang/internal/constants"
+	"silobang/internal/storage"
+	"silobang/internal/version"
 )
 
 // ServiceInfo holds service-level metrics for the GET /api/topics response
@@ -35,6 +36,7 @@ type StorageSummary struct {
 
 // VersionInfo provides version and format information
 type VersionInfo struct {
+	AppVersion  string `json:"app_version"`
 	BlobVersion uint16 `json:"blob_version"`
 	HeaderSize  int    `json:"header_size"`
 }
@@ -44,6 +46,7 @@ type VersionInfo struct {
 func (s *Server) getServiceInfo(topicStats map[string]map[string]interface{}) (*ServiceInfo, error) {
 	info := &ServiceInfo{
 		VersionInfo: VersionInfo{
+			AppVersion:  version.Version,
 			BlobVersion: constants.BlobVersion,
 			HeaderSize:  constants.HeaderSize,
 		},

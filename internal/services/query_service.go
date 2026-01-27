@@ -1,9 +1,9 @@
 package services
 
 import (
-	"meshbank/internal/constants"
-	"meshbank/internal/logger"
-	"meshbank/internal/queries"
+	"silobang/internal/constants"
+	"silobang/internal/logger"
+	"silobang/internal/queries"
 )
 
 // QueryService handles query execution operations.

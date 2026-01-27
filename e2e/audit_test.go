@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"meshbank/internal/constants"
+	"silobang/internal/constants"
 )
 
 // TestAuditLogImmutability verifies append-only behavior and monotonic IDs

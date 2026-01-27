@@ -10,9 +10,9 @@ import (
 	"syscall"
 	"time"
 
-	"meshbank/internal/auth"
-	"meshbank/internal/constants"
-	"meshbank/internal/logger"
+	"silobang/internal/auth"
+	"silobang/internal/constants"
+	"silobang/internal/logger"
 )
 
 // Server wraps the HTTP server with graceful shutdown

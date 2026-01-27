@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"net/http"
 
-	"meshbank/internal/audit"
-	"meshbank/internal/auth"
-	"meshbank/internal/constants"
-	"meshbank/internal/services"
+	"silobang/internal/audit"
+	"silobang/internal/auth"
+	"silobang/internal/constants"
+	"silobang/internal/services"
 )
 
 // POST /api/download/bulk - Bulk download assets as ZIP

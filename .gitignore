@@ -5,6 +5,13 @@ dist
 .DS_Store
 npm-debug.log*
 ./web/dist
-meshbank
+silobang
 *.zip
+*.tar.gz
 CLAUDE.md
+
+# Release build artifacts
+release/
+archives/
+coverage.out
+coverage.html

@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"time"
 
-	"meshbank/internal/constants"
-	"meshbank/internal/database"
-	"meshbank/internal/logger"
+	"silobang/internal/constants"
+	"silobang/internal/database"
+	"silobang/internal/logger"
 )
 
 // MetadataService handles metadata operations for assets.
@@ -226,7 +226,7 @@ func (s *MetadataService) convertValueToString(op string, value interface{}) (st
 		return "", NewServiceError(constants.ErrCodeInvalidRequest, "value must be string, number, or boolean")
 	}
 
-	if len(valueStr) > constants.MaxMetadataValueBytes {
+	if len(valueStr) > s.app.GetConfig().Metadata.MaxValueBytes {
 		return "", ErrMetadataValueTooLong
 	}
 

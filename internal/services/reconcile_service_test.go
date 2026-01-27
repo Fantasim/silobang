@@ -6,10 +6,10 @@ import (
 	"path/filepath"
 	"testing"
 
-	"meshbank/internal/audit"
-	"meshbank/internal/constants"
-	"meshbank/internal/database"
-	"meshbank/internal/logger"
+	"silobang/internal/audit"
+	"silobang/internal/constants"
+	"silobang/internal/database"
+	"silobang/internal/logger"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -161,7 +161,7 @@ func TestReconcile_OrphanedTopicPurged(t *testing.T) {
 	mockApp.RegisterTopic("topic-a", true, "")
 
 	// Set up audit logger so we can verify audit entries
-	auditLogger := audit.NewLogger(db)
+	auditLogger := audit.NewLogger(db, constants.AuditMaxLogSizeBytes, constants.AuditPurgePercentage)
 	defer auditLogger.Stop()
 	mockApp.auditLogger = auditLogger
 
@@ -280,7 +280,7 @@ func TestReconcile_MultipleOrphanedTopics(t *testing.T) {
 	mockApp.orchestratorDB = db
 	mockApp.workingDir = workDir
 
-	auditLogger := audit.NewLogger(db)
+	auditLogger := audit.NewLogger(db, constants.AuditMaxLogSizeBytes, constants.AuditPurgePercentage)
 	defer auditLogger.Stop()
 	mockApp.auditLogger = auditLogger
 

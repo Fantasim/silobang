@@ -5,18 +5,26 @@ import (
 	"fmt"
 	"time"
 
-	"meshbank/internal/constants"
+	"silobang/internal/constants"
 )
 
 // Store provides database operations for the auth system.
 // All methods operate on the orchestrator database.
 type Store struct {
-	db *sql.DB
+	db                  *sql.DB
+	maxLoginAttempts    int
+	lockoutDurationMins int
+	sessionDuration     time.Duration
 }
 
 // NewStore creates a new auth store backed by the given database.
-func NewStore(db *sql.DB) *Store {
-	return &Store{db: db}
+func NewStore(db *sql.DB, maxLoginAttempts int, lockoutDurationMins int, sessionDuration time.Duration) *Store {
+	return &Store{
+		db:                  db,
+		maxLoginAttempts:    maxLoginAttempts,
+		lockoutDurationMins: lockoutDurationMins,
+		sessionDuration:     sessionDuration,
+	}
 }
 
 // ============================================================================
@@ -165,7 +173,7 @@ func (s *Store) UpdateUserAPIKey(id int64, apiKeyHash, apiKeyPrefix string) erro
 // IncrementFailedLogin increments the failed login counter. Locks the account if threshold reached.
 func (s *Store) IncrementFailedLogin(id int64) error {
 	now := time.Now().Unix()
-	lockUntil := now + int64(constants.AuthLockoutDurationMins*60)
+	lockUntil := now + int64(s.lockoutDurationMins*60)
 
 	_, err := s.db.Exec(`
 		UPDATE auth_users SET
@@ -176,7 +184,7 @@ func (s *Store) IncrementFailedLogin(id int64) error {
 			END,
 			updated_at = ?
 		WHERE id = ?
-	`, constants.AuthMaxLoginAttempts, lockUntil, now, id)
+	`, s.maxLoginAttempts, lockUntil, now, id)
 	return err
 }
 
@@ -490,7 +498,7 @@ func (s *Store) GetAllQuotaUsage(userID int64) ([]QuotaUsage, error) {
 // CreateSession inserts a new session into the database.
 func (s *Store) CreateSession(tokenHash, tokenPrefix string, userID int64, ipAddress, userAgent string) (*Session, error) {
 	now := time.Now().Unix()
-	expiresAt := now + int64(constants.AuthSessionDuration.Seconds())
+	expiresAt := now + int64(s.sessionDuration.Seconds())
 
 	_, err := s.db.Exec(`
 		INSERT INTO auth_sessions (token_hash, token_prefix, user_id, ip_address, user_agent,

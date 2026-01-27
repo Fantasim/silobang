@@ -1,4 +1,4 @@
-// Package services provides the business logic layer for meshbank.
+// Package services provides the business logic layer for silobang.
 // Services orchestrate operations across database, storage, and config packages.
 // HTTP handlers should delegate to services for all business logic.
 package services
@@ -8,11 +8,11 @@ import (
 	"sync"
 	"time"
 
-	"meshbank/internal/audit"
-	"meshbank/internal/config"
-	"meshbank/internal/logger"
-	"meshbank/internal/prompts"
-	"meshbank/internal/queries"
+	"silobang/internal/audit"
+	"silobang/internal/config"
+	"silobang/internal/logger"
+	"silobang/internal/prompts"
+	"silobang/internal/queries"
 )
 
 // AppState provides access to shared application state.

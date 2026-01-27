@@ -8,14 +8,14 @@ import (
 	"sync"
 	"time"
 
-	"meshbank/internal/audit"
-	"meshbank/internal/config"
-	"meshbank/internal/constants"
-	"meshbank/internal/database"
-	"meshbank/internal/logger"
-	"meshbank/internal/prompts"
-	"meshbank/internal/queries"
-	"meshbank/internal/services"
+	"silobang/internal/audit"
+	"silobang/internal/config"
+	"silobang/internal/constants"
+	"silobang/internal/database"
+	"silobang/internal/logger"
+	"silobang/internal/prompts"
+	"silobang/internal/queries"
+	"silobang/internal/services"
 )
 
 // App holds all application state and dependencies
@@ -65,6 +65,9 @@ func NewApp(cfg *config.Config, log *logger.Logger) *App {
 		topicHealth:  make(map[string]*TopicHealth),
 		topicWriteMu: make(map[string]*sync.Mutex),
 	}
+
+	// Log effective configuration values
+	cfg.LogEffectiveValues(log)
 
 	// Initialize services layer
 	app.Services = services.NewServices(app, log)

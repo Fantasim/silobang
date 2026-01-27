@@ -17,7 +17,7 @@ export function NavBar() {
         href="/"
         onClick={(e) => { e.preventDefault(); navigate('/'); }}
       >
-        MESHBANK
+        SILOBANG
       </a>
 
       <div class="navbar-links">

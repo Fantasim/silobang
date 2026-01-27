@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"meshbank/internal/constants"
+	"silobang/internal/constants"
 )
 
 // =============================================================================
@@ -74,8 +74,8 @@ func TestMonitoringEndpoint_BasicInfo(t *testing.T) {
 	if mon.Application.MaxDatSizeBytes != constants.DefaultMaxDatSize {
 		t.Errorf("Expected MaxDatSizeBytes=%d, got %d", constants.DefaultMaxDatSize, mon.Application.MaxDatSizeBytes)
 	}
-	if mon.Application.MaxMetadataValueBytes != constants.MaxMetadataValueBytes {
-		t.Errorf("Expected MaxMetadataValueBytes=%d, got %d", constants.MaxMetadataValueBytes, mon.Application.MaxMetadataValueBytes)
+	if mon.Application.MaxMetadataValueBytes != ts.App.Config.Metadata.MaxValueBytes {
+		t.Errorf("Expected MaxMetadataValueBytes=%d, got %d", ts.App.Config.Metadata.MaxValueBytes, mon.Application.MaxMetadataValueBytes)
 	}
 
 	// Logs summary should have 4 levels

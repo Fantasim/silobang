@@ -2,8 +2,6 @@ package e2e
 
 import (
 	"testing"
-
-	"meshbank/internal/constants"
 )
 
 // TestBatchMetadataBasic tests basic batch set/delete operations
@@ -357,7 +355,7 @@ func TestBatchMetadataMaxOperations(t *testing.T) {
 	ts.CreateTopic(t, "max-ops-test")
 
 	// Create a batch request with operations over the limit
-	overLimit := constants.BatchMetadataMaxOperations + 1
+	overLimit := ts.App.Config.Batch.MaxOperations + 1
 	operations := make([]BatchMetadataOperation, overLimit)
 	for i := 0; i < overLimit; i++ {
 		// Use fake hashes - we just want to test the limit

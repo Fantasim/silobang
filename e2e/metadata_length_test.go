@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"meshbank/internal/constants"
+	"silobang/internal/constants"
 )
 
 // TestMetadataKeyLengthValidation tests key length limits
@@ -77,7 +77,7 @@ func TestMetadataValueLengthValidation(t *testing.T) {
 	upload := ts.UploadFileExpectSuccess(t, "value-length-test", "test.bin", SmallFile, "")
 
 	// Test 1: Value at exactly max size (10MB) - should succeed
-	maxValue := strings.Repeat("x", constants.MaxMetadataValueBytes)
+	maxValue := strings.Repeat("x", ts.App.Config.Metadata.MaxValueBytes)
 	resp, err := ts.POST("/api/assets/"+upload.Hash+"/metadata", map[string]interface{}{
 		"op":                "set",
 		"key":               "large_value",
@@ -93,11 +93,11 @@ func TestMetadataValueLengthValidation(t *testing.T) {
 	if resp.StatusCode != 200 {
 		bodyBytes, _ := io.ReadAll(resp.Body)
 		t.Errorf("Expected 200 for value at max size (%d bytes), got %d: %s",
-			constants.MaxMetadataValueBytes, resp.StatusCode, string(bodyBytes))
+			ts.App.Config.Metadata.MaxValueBytes, resp.StatusCode, string(bodyBytes))
 	}
 
 	// Test 2: Value exceeding max size - should fail
-	tooLargeValue := strings.Repeat("x", constants.MaxMetadataValueBytes+1)
+	tooLargeValue := strings.Repeat("x", ts.App.Config.Metadata.MaxValueBytes+1)
 	resp, err = ts.POST("/api/assets/"+upload.Hash+"/metadata", map[string]interface{}{
 		"op":                "set",
 		"key":               "too_large",
@@ -194,7 +194,7 @@ func TestBatchMetadataValueLengthValidation(t *testing.T) {
 	upload2 := ts.UploadFileExpectSuccess(t, "batch-value-test", "file2.bin", []byte("content2"), "")
 
 	// Test batch with one valid value and one too large value
-	tooLargeValue := strings.Repeat("v", constants.MaxMetadataValueBytes+1)
+	tooLargeValue := strings.Repeat("v", ts.App.Config.Metadata.MaxValueBytes+1)
 	batchReq := BatchMetadataRequest{
 		Operations: []BatchMetadataOperation{
 			{Hash: upload1.Hash, Op: "set", Key: "key1", Value: "valid_value"},
@@ -291,7 +291,7 @@ func TestApplyMetadataValueLengthValidation(t *testing.T) {
 	ts.UploadFileExpectSuccess(t, "apply-value-test", "test.bin", SmallFile, "")
 
 	// Test apply with value too large - should fail before execution
-	tooLargeValue := strings.Repeat("v", constants.MaxMetadataValueBytes+1)
+	tooLargeValue := strings.Repeat("v", ts.App.Config.Metadata.MaxValueBytes+1)
 	resp, err := ts.POST("/api/metadata/apply", map[string]interface{}{
 		"query_preset":      "recent-imports",
 		"topics":            []string{"apply-value-test"},

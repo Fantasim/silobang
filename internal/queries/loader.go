@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"gopkg.in/yaml.v3"
-	"meshbank/internal/constants"
-	"meshbank/internal/logger"
+	"silobang/internal/constants"
+	"silobang/internal/logger"
 )
 
 var queryNameRegex = regexp.MustCompile(constants.QueryNameRegex)

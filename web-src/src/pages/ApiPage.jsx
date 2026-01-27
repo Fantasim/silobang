@@ -69,7 +69,7 @@ export function ApiPage() {
   const copySchemaAsMarkdown = () => {
     if (!schema?.endpoints) return;
 
-    const lines = ['# MeshBank API Reference', '', `Base URL: ${schema.base_url}`, ''];
+    const lines = ['# SiloBang API Reference', '', `Base URL: ${schema.base_url}`, ''];
 
     const groups = groupedEndpoints;
     for (const [category, endpoints] of Object.entries(groups)) {

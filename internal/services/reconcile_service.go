@@ -5,10 +5,10 @@ import (
 	"sync"
 	"time"
 
-	"meshbank/internal/audit"
-	"meshbank/internal/constants"
-	"meshbank/internal/database"
-	"meshbank/internal/logger"
+	"silobang/internal/audit"
+	"silobang/internal/constants"
+	"silobang/internal/database"
+	"silobang/internal/logger"
 )
 
 // ReconcileResult holds the outcome of a reconciliation run.

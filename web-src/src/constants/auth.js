@@ -105,7 +105,7 @@ export const AUTH_METHODS = {
 // TOKEN / STORAGE
 // =============================================================================
 
-export const AUTH_TOKEN_STORAGE_KEY = 'meshbank_session_token';
+export const AUTH_TOKEN_STORAGE_KEY = 'silobang_session_token';
 export const AUTH_TOKEN_QUERY_PARAM = 'token';
 
 // =============================================================================

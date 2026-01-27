@@ -7,8 +7,8 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 
-	"meshbank/internal/constants"
-	"meshbank/internal/database"
+	"silobang/internal/constants"
+	"silobang/internal/database"
 )
 
 // setupTestDB creates an in-memory SQLite database with the orchestrator schema.
@@ -30,7 +30,7 @@ func setupTestDB(t *testing.T) *sql.DB {
 // setupTestStore creates a store backed by an in-memory DB.
 func setupTestStore(t *testing.T) *Store {
 	t.Helper()
-	return NewStore(setupTestDB(t))
+	return NewStore(setupTestDB(t), constants.AuthMaxLoginAttempts, constants.AuthLockoutDurationMins, constants.AuthSessionDuration)
 }
 
 // ============================================================================

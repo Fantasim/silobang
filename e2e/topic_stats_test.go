@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"meshbank/internal/constants"
+	"silobang/internal/constants"
 )
 
 // TestTopicStatsCorrectness verifies that topic stats (db_size, dat_size, total_size)

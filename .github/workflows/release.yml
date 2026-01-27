@@ -1,0 +1,340 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+env:
+  GO_VERSION: '1.25'
+  NODE_VERSION: '20'
+  APP_NAME: silobang
+  APP_DISPLAY_NAME: SiloBang
+
+jobs:
+  # ============================================================================
+  # Job 1: Validate that the tag matches scripts/.config.json version
+  # ============================================================================
+  validate:
+    name: Validate Release Tag
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.config.outputs.version }}
+      tag: ${{ steps.config.outputs.tag }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Read config version
+        id: config
+        run: |
+          VERSION=$(jq -r '.version' scripts/.config.json)
+          TAG="v${VERSION}"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          echo "Config version: ${VERSION}"
+          echo "Git tag: ${GITHUB_REF_NAME}"
+
+      - name: Validate tag matches config
+        run: |
+          CONFIG_TAG="v$(jq -r '.version' scripts/.config.json)"
+          if [[ "$GITHUB_REF_NAME" != "$CONFIG_TAG" ]]; then
+            echo "::error::Tag ($GITHUB_REF_NAME) does not match config version ($CONFIG_TAG)"
+            exit 1
+          fi
+
+      - name: Check for existing release
+        run: |
+          if gh release view "$GITHUB_REF_NAME" &>/dev/null; then
+            echo "::error::Release $GITHUB_REF_NAME already exists"
+            exit 1
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  # ============================================================================
+  # Job 2: Run tests and build frontend (shared artifact)
+  # ============================================================================
+  test-and-build-frontend:
+    name: Test & Build Frontend
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: web-src/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: web-src
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Build frontend
+        working-directory: web-src
+        run: npm run build
+
+      - name: Run Go tests
+        run: go test -v ./...
+
+      - name: Upload frontend dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: web/dist/
+          retention-days: 1
+
+  # ============================================================================
+  # Job 3: Cross-compile binaries (parallel matrix)
+  # ============================================================================
+  build:
+    name: Build ${{ matrix.platform.label }}
+    needs: [validate, test-and-build-frontend]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - { label: linux-amd64,   goos: linux,   goarch: amd64, cc: gcc,                        archive: tar.gz }
+          - { label: linux-arm64,   goos: linux,   goarch: arm64, cc: aarch64-linux-gnu-gcc,       archive: tar.gz, apt: gcc-aarch64-linux-gnu }
+          - { label: macos-amd64,   goos: darwin,  goarch: amd64, cc: o64-clang,                   archive: tar.gz, osxcross: true }
+          - { label: macos-arm64,   goos: darwin,  goarch: arm64, cc: oa64-clang,                  archive: tar.gz, osxcross: true }
+          - { label: windows-amd64, goos: windows, goarch: amd64, cc: x86_64-w64-mingw32-gcc,     archive: zip,    apt: gcc-mingw-w64-x86-64 }
+    env:
+      VERSION: ${{ needs.validate.outputs.version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Download frontend dist
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: web/dist/
+
+      - name: Install cross-compiler (apt)
+        if: matrix.platform.apt
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ${{ matrix.platform.apt }}
+
+      - name: Cache osxcross toolchain
+        if: matrix.platform.osxcross
+        id: cache-osxcross
+        uses: actions/cache@v4
+        with:
+          path: /tmp/osxcross
+          key: osxcross-macos15.5-${{ runner.os }}
+          restore-keys: |
+            osxcross-macos15.5-
+
+      - name: Build osxcross toolchain
+        if: matrix.platform.osxcross && steps.cache-osxcross.outputs.cache-hit != 'true'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq \
+            clang llvm-dev libxml2-dev uuid-dev \
+            libssl-dev bash patch make tar xz-utils \
+            bzip2 gzip sed cpio libbz2-dev cmake
+
+          git clone --depth 1 https://github.com/tpoechtrager/osxcross.git /tmp/osxcross
+          cd /tmp/osxcross
+          wget -q -nc https://github.com/joseluisq/macosx-sdks/releases/download/15.5/MacOSX15.5.sdk.tar.xz -O tarballs/MacOSX15.5.sdk.tar.xz
+          UNATTENDED=1 ./build.sh
+
+      - name: Add osxcross to PATH
+        if: matrix.platform.osxcross
+        run: |
+          echo "/tmp/osxcross/target/bin" >> "$GITHUB_PATH"
+
+      - name: Build binary
+        run: |
+          BINARY_NAME="${APP_NAME}"
+          if [[ "${{ matrix.platform.goos }}" == "windows" ]]; then
+            BINARY_NAME="${APP_NAME}.exe"
+          fi
+
+          PLATFORM_DIR="release/${APP_NAME}-v${VERSION}-${{ matrix.platform.label }}"
+          mkdir -p "$PLATFORM_DIR"
+
+          export CGO_ENABLED=1
+          export GOOS="${{ matrix.platform.goos }}"
+          export GOARCH="${{ matrix.platform.goarch }}"
+          export CC="${{ matrix.platform.cc }}"
+
+          LDFLAGS="-X silobang/internal/version.Version=${VERSION} -s -w"
+          go build -ldflags="$LDFLAGS" -o "$PLATFORM_DIR/$BINARY_NAME" ./cmd/silobang
+
+          echo "Built: $PLATFORM_DIR/$BINARY_NAME"
+          ls -lh "$PLATFORM_DIR/$BINARY_NAME"
+
+      - name: Generate platform README
+        run: |
+          PLATFORM_DIR="release/${APP_NAME}-v${VERSION}-${{ matrix.platform.label }}"
+          COMMIT_SHA=$(git rev-parse HEAD)
+
+          case "${{ matrix.platform.goos }}" in
+            linux)   TEMPLATE="docs/templates/get-started-linux.md" ;;
+            darwin)  TEMPLATE="docs/templates/get-started-macos.md" ;;
+            windows) TEMPLATE="docs/templates/get-started-windows.md" ;;
+          esac
+
+          REPO_URL="https://github.com/${{ github.repository }}"
+
+          if [[ -f "$TEMPLATE" ]]; then
+            sed -e "s|{{VERSION}}|${VERSION}|g" \
+                -e "s|{{REPO_URL}}|${REPO_URL}|g" \
+                -e "s|{{COMMIT_SHA}}|${COMMIT_SHA}|g" \
+                "$TEMPLATE" > "$PLATFORM_DIR/README.md"
+          fi
+
+      - name: Generate BUILD_INFO.txt
+        run: |
+          PLATFORM_DIR="release/${APP_NAME}-v${VERSION}-${{ matrix.platform.label }}"
+          COMMIT_SHA=$(git rev-parse HEAD)
+          COMMIT_SHORT=$(git rev-parse --short HEAD)
+          REPO_URL="https://github.com/${{ github.repository }}"
+
+          sed -e "s|{{VERSION}}|${VERSION}|g" \
+              -e "s|{{PLATFORM}}|${{ matrix.platform.label }}|g" \
+              -e "s|{{BUILD_DATE}}|$(date -u '+%Y-%m-%dT%H:%M:%SZ')|g" \
+              -e "s|{{GO_VERSION}}|$(go version | awk '{print $3}')|g" \
+              -e "s|{{COMMIT}}|${COMMIT_SHORT}|g" \
+              -e "s|{{COMMIT_FULL}}|${COMMIT_SHA}|g" \
+              -e "s|{{REPO_URL}}|${REPO_URL}|g" \
+              docs/templates/build-info.txt > "$PLATFORM_DIR/BUILD_INFO.txt"
+
+      - name: Create archive
+        run: |
+          PLATFORM_DIR="${APP_NAME}-v${VERSION}-${{ matrix.platform.label }}"
+          cd release
+
+          case "${{ matrix.platform.archive }}" in
+            tar.gz) tar -czf "${PLATFORM_DIR}.tar.gz" "${PLATFORM_DIR}/" ;;
+            zip)    zip -qr "${PLATFORM_DIR}.zip" "${PLATFORM_DIR}/" ;;
+          esac
+
+          # Generate checksum for the archive
+          sha256sum ${PLATFORM_DIR}.tar.gz ${PLATFORM_DIR}.zip 2>/dev/null > "${PLATFORM_DIR}.sha256" || true
+
+      - name: Upload release artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-${{ matrix.platform.label }}
+          path: |
+            release/*.tar.gz
+            release/*.zip
+            release/*.sha256
+          retention-days: 1
+
+  # ============================================================================
+  # Job 4: Publish GitHub Release with all artifacts
+  # ============================================================================
+  publish:
+    name: Publish GitHub Release
+    needs: [validate, build]
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ needs.validate.outputs.version }}
+      TAG: ${{ needs.validate.outputs.tag }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download all release artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts/
+          pattern: release-*
+          merge-multiple: true
+
+      - name: Consolidate checksums
+        run: |
+          cd artifacts
+          cat *.sha256 > SHA256SUMS.txt 2>/dev/null || true
+          rm -f *.sha256
+          echo "=== SHA256 Checksums ==="
+          cat SHA256SUMS.txt
+
+      - name: Generate release notes
+        run: |
+          COMMIT_SHA=$(git rev-parse HEAD)
+          COMMIT_SHORT=$(git rev-parse --short HEAD)
+          REPO_URL="https://github.com/${{ github.repository }}"
+          NOTES_FILE="artifacts/RELEASE_NOTES.md"
+
+          # Extract changelog for this version
+          CHANGELOG=$(awk -v version="$VERSION" '
+              /^## \[/ {
+                  if ($0 ~ "\\[" version "\\]") {
+                      in_section = 1
+                      next
+                  } else if (in_section) {
+                      exit
+                  }
+              }
+              in_section { print }
+          ' docs/CHANGELOG.md 2>/dev/null || echo "")
+
+          if [[ -z "$CHANGELOG" ]]; then
+              CHANGELOG="Release v${VERSION}"
+          fi
+
+          # First pass: replace simple placeholders
+          sed -e "s|{{VERSION}}|${VERSION}|g" \
+              -e "s|{{REPO_URL}}|${REPO_URL}|g" \
+              -e "s|{{COMMIT_SHA}}|${COMMIT_SHA}|g" \
+              -e "s|{{COMMIT_SHORT}}|${COMMIT_SHORT}|g" \
+              docs/templates/release-notes.md > /tmp/release_notes_tmp.md
+
+          # Replace {{CHANGELOG}} placeholder (may contain newlines)
+          awk -v changelog="$CHANGELOG" '{gsub(/\{\{CHANGELOG\}\}/, changelog)}1' \
+              /tmp/release_notes_tmp.md > /tmp/release_notes_tmp2.md
+
+          # Replace {{CHECKSUMS}} placeholder with file content
+          awk '
+            /\{\{CHECKSUMS\}\}/ {
+              while ((getline line < "artifacts/SHA256SUMS.txt") > 0) {
+                print line
+              }
+              close("artifacts/SHA256SUMS.txt")
+              next
+            }
+            {print}
+          ' /tmp/release_notes_tmp2.md > "$NOTES_FILE"
+
+          echo "=== Release Notes Generated ==="
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.TAG }}
+          name: "${{ env.APP_DISPLAY_NAME }} ${{ env.TAG }}"
+          body_path: artifacts/RELEASE_NOTES.md
+          draft: false
+          prerelease: false
+          files: |
+            artifacts/*.tar.gz
+            artifacts/*.zip
+            artifacts/SHA256SUMS.txt
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

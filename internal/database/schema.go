@@ -2,7 +2,7 @@ package database
 
 import (
 	"database/sql"
-	"meshbank/internal/constants"
+	"silobang/internal/constants"
 )
 
 // GetTopicSchema returns the full SQL schema for topic databases

@@ -8,9 +8,9 @@ import (
 	"strings"
 	"time"
 
-	"meshbank/internal/constants"
-	"meshbank/internal/logger"
-	"meshbank/internal/sanitize"
+	"silobang/internal/constants"
+	"silobang/internal/logger"
+	"silobang/internal/sanitize"
 )
 
 // MonitoringService provides system health metrics and log file access.
@@ -212,7 +212,7 @@ func (s *MonitoringService) getApplicationInfo() ApplicationInfo {
 		WorkingDirectory:      cfg.WorkingDirectory,
 		Port:                  cfg.Port,
 		MaxDatSizeBytes:       cfg.MaxDatSize,
-		MaxMetadataValueBytes: constants.MaxMetadataValueBytes,
+		MaxMetadataValueBytes: cfg.Metadata.MaxValueBytes,
 	}
 
 	// Topic counts
@@ -356,9 +356,10 @@ func (s *MonitoringService) GetLogFileContent(level, filename string) ([]byte, e
 	}
 
 	// Read with size cap
+	maxReadBytes := s.app.GetConfig().Monitoring.LogFileMaxReadBytes
 	readSize := info.Size()
-	if readSize > constants.MonitoringLogFileMaxReadBytes {
-		readSize = constants.MonitoringLogFileMaxReadBytes
+	if readSize > maxReadBytes {
+		readSize = maxReadBytes
 		s.logger.Info("Monitoring: truncating log file %s/%s to %d bytes (file size: %d)",
 			level, filename, readSize, info.Size())
 	}

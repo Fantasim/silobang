@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"meshbank/internal/storage"
+	"silobang/internal/storage"
 )
 
 func TestSingleAssetUpload(t *testing.T) {

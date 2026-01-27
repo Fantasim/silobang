@@ -26,7 +26,7 @@ export const METADATA_JSON_INDENT = 2;
 /**
  * Default processor name for metadata operations.
  */
-export const DEFAULT_METADATA_PROCESSOR = 'meshbank-ui';
+export const DEFAULT_METADATA_PROCESSOR = 'silobang-ui';
 
 /**
  * Default processor version for metadata operations.

@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"meshbank/internal/constants"
+	"silobang/internal/constants"
 )
 
 func ValidateWorkingDirectory(path string) error {

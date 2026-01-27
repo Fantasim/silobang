@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"meshbank/internal/constants"
+	"silobang/internal/constants"
 )
 
 // ====================
@@ -511,7 +511,7 @@ func TestMetadataValueTooLong(t *testing.T) {
 	uploadResp := ts.UploadFileExpectSuccess(t, "meta-test", "test.txt", []byte("test"), "")
 
 	// Value exceeding max length (10MB + 1)
-	longValue := strings.Repeat("v", constants.MaxMetadataValueBytes+1)
+	longValue := strings.Repeat("v", ts.App.Config.Metadata.MaxValueBytes+1)
 
 	errResp := ts.SetMetadataExpectError(t, uploadResp.Hash, "key", longValue, 400)
 

@@ -7,7 +7,7 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 
-	"meshbank/internal/constants"
+	"silobang/internal/constants"
 )
 
 // createTestDB creates an in-memory SQLite database with the audit_log schema
@@ -41,7 +41,7 @@ func createTestDB(t *testing.T) *sql.DB {
 func newTestLogger(t *testing.T) (*Logger, *sql.DB) {
 	t.Helper()
 	db := createTestDB(t)
-	logger := NewLogger(db)
+	logger := NewLogger(db, constants.AuditMaxLogSizeBytes, constants.AuditPurgePercentage)
 	t.Cleanup(func() {
 		logger.Stop()
 		db.Close()
@@ -69,7 +69,7 @@ func TestLogAndQueryNewActions(t *testing.T) {
 		{constants.AuditActionMetadataSet, MetadataSetDetails{Hash: "abc123def456", Op: "set", Key: "tag"}},
 		{constants.AuditActionMetadataBatch, MetadataBatchDetails{OperationCount: 50, Succeeded: 48, Failed: 2, Processor: "api"}},
 		{constants.AuditActionMetadataApply, MetadataApplyDetails{QueryPreset: "all_assets", Op: "set", Key: "status", OperationCount: 100, Succeeded: 95, Failed: 5, Processor: "pipeline"}},
-		{constants.AuditActionConfigChanged, ConfigChangedDetails{WorkingDirectory: "/data/meshbank", IsBootstrap: true}},
+		{constants.AuditActionConfigChanged, ConfigChangedDetails{WorkingDirectory: "/data/silobang", IsBootstrap: true}},
 	}
 
 	for _, tc := range testCases {

@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"meshbank/internal/constants"
+	"silobang/internal/constants"
 )
 
 // TestBulkDownload_SingleAsset tests downloading a single asset via IDs mode

@@ -32,7 +32,7 @@ export function LoginPage() {
   return (
     <div class="login-page">
       <div class="login-card">
-        <h1 class="login-title">MESHBANK</h1>
+        <h1 class="login-title">SILOBANG</h1>
         <p class="login-subtitle">Authenticate to continue</p>
 
         <form onSubmit={handleSubmit}>

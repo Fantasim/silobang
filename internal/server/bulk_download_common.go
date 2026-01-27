@@ -10,10 +10,10 @@ import (
 	"strings"
 	"time"
 
-	"meshbank/internal/constants"
-	"meshbank/internal/database"
-	"meshbank/internal/sanitize"
-	"meshbank/internal/services"
+	"silobang/internal/constants"
+	"silobang/internal/database"
+	"silobang/internal/sanitize"
+	"silobang/internal/services"
 )
 
 // BulkDownloadRequest represents the request body for bulk downloads

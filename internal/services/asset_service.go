@@ -13,11 +13,11 @@ import (
 
 	"github.com/zeebo/blake3"
 
-	"meshbank/internal/constants"
-	"meshbank/internal/database"
-	"meshbank/internal/logger"
-	"meshbank/internal/sanitize"
-	"meshbank/internal/storage"
+	"silobang/internal/constants"
+	"silobang/internal/database"
+	"silobang/internal/logger"
+	"silobang/internal/sanitize"
+	"silobang/internal/storage"
 )
 
 // UploadResult contains the result of an asset upload operation.
@@ -285,7 +285,7 @@ func (s *AssetService) GetInfo(hash string) (*AssetInfo, error) {
 // Returns temp file path, hash, size, or error.
 func (s *AssetService) streamToTempWithHash(r io.Reader, maxSize int64) (tempPath string, hash string, size int64, err error) {
 	// Create temp file
-	tempFile, err := os.CreateTemp("", "meshbank-upload-*")
+	tempFile, err := os.CreateTemp("", "silobang-upload-*")
 	if err != nil {
 		return "", "", 0, fmt.Errorf("failed to create temp file: %w", err)
 	}

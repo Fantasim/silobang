@@ -5,8 +5,8 @@ import (
 	"database/sql"
 	"testing"
 
-	"meshbank/internal/constants"
-	"meshbank/internal/logger"
+	"silobang/internal/constants"
+	"silobang/internal/logger"
 
 	_ "github.com/mattn/go-sqlite3"
 )

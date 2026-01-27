@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"meshbank/internal/constants"
+	"silobang/internal/constants"
 )
 
 // ValidateConstraintsJSON validates that the constraints JSON matches the expected

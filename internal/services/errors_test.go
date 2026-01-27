@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"testing"
 
-	"meshbank/internal/constants"
+	"silobang/internal/constants"
 )
 
 func TestNewServiceError(t *testing.T) {

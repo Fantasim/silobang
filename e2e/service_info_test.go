@@ -6,8 +6,8 @@ import (
 	"sync"
 	"testing"
 
-	"meshbank/internal/constants"
-	"meshbank/internal/storage"
+	"silobang/internal/constants"
+	"silobang/internal/storage"
 )
 
 // TestServiceInfoBasicStructure verifies the service info response shape and types
@@ -22,6 +22,11 @@ func TestServiceInfoBasicStructure(t *testing.T) {
 	}
 
 	service := topicsResp.Service
+
+	// Verify app version is present (will be "dev" in test builds)
+	if service.VersionInfo.AppVersion == "" {
+		t.Error("app_version should not be empty")
+	}
 
 	// Verify version info matches constants
 	if service.VersionInfo.BlobVersion != constants.BlobVersion {

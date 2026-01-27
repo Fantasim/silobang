@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"meshbank/internal/constants"
-	"meshbank/internal/database"
-	"meshbank/internal/logger"
-	"meshbank/internal/storage"
+	"silobang/internal/constants"
+	"silobang/internal/database"
+	"silobang/internal/logger"
+	"silobang/internal/storage"
 )
 
 // VerifyService handles verification of DAT files and index consistency.

@@ -18,16 +18,16 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 
-	"meshbank/internal/audit"
-	"meshbank/internal/config"
-	"meshbank/internal/constants"
-	"meshbank/internal/database"
-	"meshbank/internal/logger"
-	"meshbank/internal/queries"
-	"meshbank/internal/server"
+	"silobang/internal/audit"
+	"silobang/internal/config"
+	"silobang/internal/constants"
+	"silobang/internal/database"
+	"silobang/internal/logger"
+	"silobang/internal/queries"
+	"silobang/internal/server"
 )
 
-// TestServer wraps a running meshbank server for testing
+// TestServer wraps a running silobang server for testing
 type TestServer struct {
 	Server    *httptest.Server
 	App       *server.App
@@ -42,12 +42,12 @@ func StartTestServer(t *testing.T) *TestServer {
 	t.Helper()
 
 	// Create temp directories
-	workDir, err := os.MkdirTemp("", "meshbank-test-work-*")
+	workDir, err := os.MkdirTemp("", "silobang-test-work-*")
 	if err != nil {
 		t.Fatalf("failed to create work dir: %v", err)
 	}
 
-	configDir, err := os.MkdirTemp("", "meshbank-test-config-*")
+	configDir, err := os.MkdirTemp("", "silobang-test-config-*")
 	if err != nil {
 		os.RemoveAll(workDir)
 		t.Fatalf("failed to create config dir: %v", err)
@@ -59,6 +59,7 @@ func StartTestServer(t *testing.T) *TestServer {
 		Port:             0,  // Let httptest assign port
 		MaxDatSize:       constants.DefaultMaxDatSize,
 	}
+	cfg.ApplyDefaults()
 
 	log := logger.NewLogger(logger.LevelError) // Suppress logs in tests
 	app := server.NewApp(cfg, log)
@@ -137,7 +138,7 @@ func (ts *TestServer) Restart(t *testing.T) {
 		app.OrchestratorDB = orchDB
 
 		// Initialize audit logger
-		app.AuditLogger = audit.NewLogger(orchDB)
+		app.AuditLogger = audit.NewLogger(orchDB, cfg.Audit.MaxLogSizeBytes, cfg.Audit.PurgePercentage)
 
 		// Re-initialize services (including auth)
 		app.ReinitServices()
@@ -1224,12 +1225,12 @@ func StartTestServerWithMaxSize(t *testing.T, maxSize int64) *TestServer {
 	t.Helper()
 
 	// Create temp directories
-	workDir, err := os.MkdirTemp("", "meshbank-test-work-*")
+	workDir, err := os.MkdirTemp("", "silobang-test-work-*")
 	if err != nil {
 		t.Fatalf("failed to create work dir: %v", err)
 	}
 
-	configDir, err := os.MkdirTemp("", "meshbank-test-config-*")
+	configDir, err := os.MkdirTemp("", "silobang-test-config-*")
 	if err != nil {
 		os.RemoveAll(workDir)
 		t.Fatalf("failed to create config dir: %v", err)
@@ -1241,6 +1242,7 @@ func StartTestServerWithMaxSize(t *testing.T, maxSize int64) *TestServer {
 		Port:             0,
 		MaxDatSize:       maxSize,
 	}
+	cfg.ApplyDefaults()
 
 	log := logger.NewLogger(logger.LevelError)
 	app := server.NewApp(cfg, log)

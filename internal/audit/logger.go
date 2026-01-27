@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"meshbank/internal/constants"
+	"silobang/internal/constants"
 )
 
 // subscription wraps a channel with safe closure tracking to prevent
@@ -45,19 +45,23 @@ func (s *subscription) close() {
 
 // Logger provides thread-safe audit logging with pub/sub for SSE streaming
 type Logger struct {
-	db          *sql.DB
-	mu          sync.Mutex
-	subscribers map[chan Entry]*subscription
-	subMu       sync.RWMutex
-	stopClean   chan struct{} // For cleanup goroutine shutdown
+	db              *sql.DB
+	mu              sync.Mutex
+	subscribers     map[chan Entry]*subscription
+	subMu           sync.RWMutex
+	stopClean       chan struct{} // For cleanup goroutine shutdown
+	maxLogSizeBytes int64        // Configurable max audit log size
+	purgePercentage int          // Configurable purge percentage when limit hit
 }
 
 // NewLogger creates a new audit logger and starts the cleanup goroutine
-func NewLogger(db *sql.DB) *Logger {
+func NewLogger(db *sql.DB, maxLogSizeBytes int64, purgePercentage int) *Logger {
 	l := &Logger{
-		db:          db,
-		subscribers: make(map[chan Entry]*subscription),
-		stopClean:   make(chan struct{}),
+		db:              db,
+		subscribers:     make(map[chan Entry]*subscription),
+		stopClean:       make(chan struct{}),
+		maxLogSizeBytes: maxLogSizeBytes,
+		purgePercentage: purgePercentage,
 	}
 
 	// Start cleanup goroutine for log size management
@@ -175,7 +179,7 @@ func (l *Logger) enforceLogSizeLimit() {
 	}
 
 	totalSize := pageCount * pageSize
-	if totalSize < constants.AuditMaxLogSizeBytes {
+	if totalSize < l.maxLogSizeBytes {
 		return // Under limit, nothing to do
 	}
 
@@ -186,7 +190,7 @@ func (l *Logger) enforceLogSizeLimit() {
 	}
 
 	// Purge percentage of entries (or minimum threshold)
-	purgeCount := totalEntries * int64(constants.AuditPurgePercentage) / 100
+	purgeCount := totalEntries * int64(l.purgePercentage) / 100
 	if purgeCount < int64(constants.AuditMinPurgeEntries) {
 		purgeCount = int64(constants.AuditMinPurgeEntries)
 	}

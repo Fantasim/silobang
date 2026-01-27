@@ -5,7 +5,7 @@ import (
 	"strings"
 	"unicode"
 
-	"meshbank/internal/constants"
+	"silobang/internal/constants"
 )
 
 // illegalFilenameChars contains characters that are forbidden in filenames

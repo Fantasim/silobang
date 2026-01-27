@@ -327,7 +327,7 @@ template: |
   # File Upload Script
 
   ## Purpose
-  Upload files to MeshBank topics with optional parent-child lineage tracking.
+  Upload files to SiloBang topics with optional parent-child lineage tracking.
 
   ## Base URL
   {{base_url}}
@@ -369,7 +369,7 @@ template: |
   - Parent ID must be an existing asset hash (64 hex chars)
 
   ## Duplicate Handling
-  MeshBank uses content-addressed storage:
+  SiloBang uses content-addressed storage:
   - Files are hashed with BLAKE3 before storage
   - If hash already exists anywhere, upload is skipped
   - Response includes existing_topic if found elsewhere

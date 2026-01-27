@@ -1,7 +1,7 @@
 package server
 
 import (
-	"meshbank/internal/auth"
+	"silobang/internal/auth"
 	"net/http"
 	"strings"
 )

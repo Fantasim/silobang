@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"meshbank/internal/constants"
+	"silobang/internal/constants"
 )
 
 func TestNewLogger(t *testing.T) {

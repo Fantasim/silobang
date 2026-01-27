@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"testing"
 
-	"meshbank/internal/constants"
+	"silobang/internal/constants"
 )
 
 // =============================================================================
@@ -22,7 +22,7 @@ func TestBruteForce_AccountLockout(t *testing.T) {
 	user := ts.CreateTestUser(t, "locktest", "correct-password-12345")
 
 	// Send MaxLoginAttempts wrong passwords
-	for i := 0; i < constants.AuthMaxLoginAttempts; i++ {
+	for i := 0; i < ts.App.Config.Auth.MaxLoginAttempts; i++ {
 		resp, err := ts.UnauthenticatedPOST("/api/auth/login", map[string]string{
 			"username": user.Username,
 			"password": fmt.Sprintf("wrong-password-%d", i),
@@ -68,7 +68,7 @@ func TestBruteForce_APIKeyStillWorks(t *testing.T) {
 	})
 
 	// Lock the account via failed login attempts
-	for i := 0; i < constants.AuthMaxLoginAttempts; i++ {
+	for i := 0; i < ts.App.Config.Auth.MaxLoginAttempts; i++ {
 		resp, _ := ts.UnauthenticatedPOST("/api/auth/login", map[string]string{
 			"username": user.Username,
 			"password": "wrong",

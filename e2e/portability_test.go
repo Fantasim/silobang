@@ -33,7 +33,7 @@ func TestPortableTopic(t *testing.T) {
 	}
 
 	// Create second working directory
-	workDir2, err := os.MkdirTemp("", "meshbank-test-work2-*")
+	workDir2, err := os.MkdirTemp("", "silobang-test-work2-*")
 	if err != nil {
 		t.Fatalf("Failed to create second work dir: %v", err)
 	}

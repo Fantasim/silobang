@@ -7,9 +7,9 @@ import (
 	"strings"
 	"testing"
 
-	"meshbank/internal/constants"
-	"meshbank/internal/database"
-	"meshbank/internal/sanitize"
+	"silobang/internal/constants"
+	"silobang/internal/database"
+	"silobang/internal/sanitize"
 )
 
 func TestBuildFilename(t *testing.T) {

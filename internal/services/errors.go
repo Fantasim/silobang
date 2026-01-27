@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"meshbank/internal/constants"
+	"silobang/internal/constants"
 )
 
 // ServiceError represents a service-level error with an error code

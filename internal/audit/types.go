@@ -1,7 +1,7 @@
 package audit
 
 import (
-	"meshbank/internal/constants"
+	"silobang/internal/constants"
 )
 
 // Entry represents a single audit log entry
