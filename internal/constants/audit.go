@@ -45,6 +45,11 @@ const (
 	AuditActionConfigChanged = "config_changed"
 )
 
+// Audit Log Action Types — Disk Usage
+const (
+	AuditActionDiskLimitHit = "disk_limit_hit"
+)
+
 // Audit Log Configuration
 const (
 	AuditLogTableName      = "audit_log"

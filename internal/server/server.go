@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"strings"
+	"sync"
 	"syscall"
 	"time"
 
@@ -22,6 +22,13 @@ type Server struct {
 	logger          *logger.Logger
 	webFS           fs.FS
 	downloadManager *DownloadSessionManager
+
+	// Pre-computed caches for immutable endpoints (schema, prompts list).
+	// Populated lazily on first successful request, never invalidated.
+	schemaCacheMu  sync.RWMutex
+	schemaCache    *cachedResponse
+	promptsCacheMu sync.RWMutex
+	promptsCache   *cachedResponse
 }
 
 // NewServer creates a new HTTP server
@@ -37,7 +44,7 @@ func NewServer(app *App, addr string, webFS fs.FS) *Server {
 	// Register routes
 	s.registerRoutes(mux)
 
-	// Build middleware chain: RequestID → SecurityHeaders → Authenticate → handler
+	// Build middleware chain: RequestID → SecurityHeaders → GzipCompress → Authenticate → handler
 	// Auth middleware uses a dynamic store provider so it adapts when the auth
 	// system is initialised after server start (e.g. POST /api/config).
 	authMW := auth.NewMiddleware(func() *auth.Store {
@@ -46,7 +53,7 @@ func NewServer(app *App, addr string, webFS fs.FS) *Server {
 		}
 		return nil
 	}, app.Logger)
-	handler := Chain(mux, RequestID, SecurityHeaders, authMW.Authenticate)
+	handler := Chain(mux, RequestID, SecurityHeaders, GzipCompress, authMW.Authenticate)
 
 	// Start periodic reconciliation to detect manually-removed topic folders
 	if app.Services.Reconcile != nil {
@@ -99,26 +106,10 @@ func (s *Server) registerRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/api/monitoring", s.handleMonitoring)
 	mux.HandleFunc("/api/monitoring/logs/", s.handleMonitoringLogFile)
 
-	// Static files (frontend)
+	// Static files (frontend) with pre-compressed asset support.
+	// Serves brotli (.br) or gzip (.gz) variants when available and accepted by the client.
 	if s.webFS != nil {
-		fileServer := http.FileServer(http.FS(s.webFS))
-
-		mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-			// Serve static files, but fall back to index.html for SPA routes
-			path := r.URL.Path
-
-			// Check if file exists (for assets like JS, CSS, images)
-			if path != "/" {
-				if _, err := fs.Stat(s.webFS, strings.TrimPrefix(path, "/")); err == nil {
-					fileServer.ServeHTTP(w, r)
-					return
-				}
-			}
-
-			// Serve index.html for SPA routes (client-side routing)
-			r.URL.Path = "/"
-			fileServer.ServeHTTP(w, r)
-		})
+		mux.HandleFunc("/", s.serveStaticWithCompression)
 	}
 }
 

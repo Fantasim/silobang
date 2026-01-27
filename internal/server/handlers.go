@@ -192,6 +192,11 @@ func (s *Server) createTopic(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Check disk usage limit before creating topic
+	if !s.checkDiskLimit(w, r, identity, "create_topic") {
+		return
+	}
+
 	// Call service
 	if err := s.app.Services.Config.CreateTopic(req.Name); err != nil {
 		s.handleServiceError(w, err)
@@ -317,6 +322,11 @@ func (s *Server) uploadAsset(w http.ResponseWriter, r *http.Request, topicName s
 	}
 	if header.Size > maxSize-int64(constants.HeaderSize) {
 		WriteError(w, http.StatusRequestEntityTooLarge, "File exceeds maximum size", constants.ErrCodeAssetTooLarge)
+		return
+	}
+
+	// Check disk usage limit before writing
+	if !s.checkDiskLimit(w, r, identity, "upload") {
 		return
 	}
 
@@ -536,6 +546,13 @@ func (s *Server) postMetadata(w http.ResponseWriter, r *http.Request, hash strin
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		WriteError(w, http.StatusBadRequest, "Invalid JSON", constants.ErrCodeInvalidRequest)
 		return
+	}
+
+	// Check disk usage limit before writing metadata (set operations grow SQLite)
+	if req.Op == constants.BatchMetadataOpSet {
+		if !s.checkDiskLimit(w, r, identity, "metadata_set") {
+			return
+		}
 	}
 
 	result, err := s.app.Services.Metadata.Set(hash, &req)

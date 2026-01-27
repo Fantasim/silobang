@@ -195,3 +195,29 @@ const (
 const (
 	MonitoringLogFileMaxReadBytes = 5 * 1024 * 1024 // 5MB cap per log file read
 )
+
+// Disk Usage Limits
+const (
+	DefaultMaxDiskUsageBytes int64 = 0          // 0 = unlimited (no disk usage cap)
+	MinMaxDiskUsageBytes     int64 = 1073741824 // 1GB minimum when limit is set
+)
+
+// Compression
+const (
+	CompressionMinSizeBytes  = 1024   // Only compress API responses >= 1KB
+	CompressionLevel         = 6      // gzip compression level (1-9, 6 is default balance)
+	CompressionAPIPathPrefix = "/api/" // Only compress responses for API routes
+)
+
+// Cache Control
+const (
+	CacheControlImmutable  = "public, max-age=86400, immutable"    // For immutable API endpoints (schema, prompts)
+	CacheControlStaticHash = "public, max-age=31536000, immutable" // For hashed static assets (JS, CSS with content hash)
+	CacheControlNoCache    = "no-cache"                            // For index.html (always revalidate)
+)
+
+// Static Asset Compression
+const (
+	CompressedFileExtGzip   = ".gz" // Gzip pre-compressed static asset extension
+	CompressedFileExtBrotli = ".br" // Brotli pre-compressed static asset extension
+)

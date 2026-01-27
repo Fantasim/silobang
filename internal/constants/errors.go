@@ -55,4 +55,7 @@ const (
 
 	// Filename Sanitization
 	ErrCodeInvalidFilename = "INVALID_FILENAME"
+
+	// Disk Usage
+	ErrCodeDiskLimitExceeded = "DISK_LIMIT_EXCEEDED"
 )

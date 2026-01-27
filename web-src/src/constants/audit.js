@@ -45,6 +45,12 @@ export const AUDIT_ACTION_COLORS = {
   default: 'var(--text-secondary)',
 };
 
+// Action filter toggle labels
+export const AUDIT_FILTER_LABELS = {
+  SELECT_ALL: 'Select All',
+  DESELECT_ALL: 'Deselect All',
+};
+
 // Time formatting thresholds (seconds)
 export const TIME_THRESHOLDS = {
   JUST_NOW: 5,

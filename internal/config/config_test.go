@@ -305,6 +305,48 @@ func TestValidate_InvalidMonitoring(t *testing.T) {
 	}
 }
 
+func TestValidate_InvalidDiskUsage(t *testing.T) {
+	tests := []struct {
+		name  string
+		value int64
+		valid bool
+	}{
+		{"zero_unlimited", 0, true},
+		{"valid_1gb", constants.MinMaxDiskUsageBytes, true},
+		{"valid_10gb", 10 * constants.MinMaxDiskUsageBytes, true},
+		{"too_small_1byte", 1, false},
+		{"too_small_500mb", 500 * 1024 * 1024, false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cfg := &Config{}
+			cfg.ApplyDefaults()
+			cfg.MaxDiskUsage = tt.value
+
+			err := cfg.validate()
+			if tt.valid && err != nil {
+				t.Errorf("expected valid config, got error: %v", err)
+			}
+			if !tt.valid && err == nil {
+				t.Error("expected validation error, got nil")
+			}
+			if !tt.valid && err != nil && !strings.Contains(err.Error(), "max_disk_usage") {
+				t.Errorf("expected max_disk_usage error, got: %v", err)
+			}
+		})
+	}
+}
+
+func TestApplyDefaults_MaxDiskUsage_ZeroByDefault(t *testing.T) {
+	cfg := &Config{}
+	cfg.ApplyDefaults()
+
+	if cfg.MaxDiskUsage != constants.DefaultMaxDiskUsageBytes {
+		t.Errorf("MaxDiskUsage: got %d, want %d", cfg.MaxDiskUsage, constants.DefaultMaxDiskUsageBytes)
+	}
+}
+
 func TestValidate_MultipleErrors(t *testing.T) {
 	cfg := &Config{}
 	cfg.ApplyDefaults()

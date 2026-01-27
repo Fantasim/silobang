@@ -192,6 +192,17 @@ type ConfigChangedDetails struct {
 }
 
 // =============================================================================
+// Detail Structs — Disk Usage
+// =============================================================================
+
+// DiskLimitHitDetails holds details for disk_limit_hit action
+type DiskLimitHitDetails struct {
+	Operation      string `json:"operation"`
+	DiskUsedBytes  uint64 `json:"disk_used_bytes"`
+	DiskLimitBytes int64  `json:"disk_limit_bytes"`
+}
+
+// =============================================================================
 // Validation
 // =============================================================================
 
@@ -225,6 +236,8 @@ func ValidActions() []string {
 		constants.AuditActionMetadataApply,
 		// Configuration
 		constants.AuditActionConfigChanged,
+		// Disk Usage
+		constants.AuditActionDiskLimitHit,
 	}
 }
 

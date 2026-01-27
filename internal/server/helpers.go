@@ -1,9 +1,13 @@
 package server
 
 import (
-	"silobang/internal/auth"
 	"net/http"
 	"strings"
+
+	"silobang/internal/audit"
+	"silobang/internal/auth"
+	"silobang/internal/constants"
+	"silobang/internal/services"
 )
 
 // getClientIP extracts the client IP address from the request
@@ -39,4 +43,40 @@ func getAuditUsername(identity *auth.Identity) string {
 		return identity.User.Username
 	}
 	return ""
+}
+
+// checkDiskLimit verifies that disk usage is below the configured limit.
+// Returns true if the operation should proceed, false if it was rejected.
+// When rejected, it writes the HTTP 507 response, logs the event, and audit-logs the hit.
+func (s *Server) checkDiskLimit(w http.ResponseWriter, r *http.Request, identity *auth.Identity, operation string) bool {
+	maxDiskUsage := s.app.Config.MaxDiskUsage
+	if maxDiskUsage <= 0 {
+		return true // No limit configured
+	}
+
+	workDir := s.app.Config.WorkingDirectory
+	if workDir == "" {
+		return true // Not configured yet, other checks will catch this
+	}
+
+	err := services.CheckDiskLimit(workDir, maxDiskUsage)
+	if err == nil {
+		return true // Within limit
+	}
+
+	s.logger.Warn("Disk limit exceeded: operation=%s user=%s ip=%s limit=%d",
+		operation, getAuditUsername(identity), getClientIP(r), maxDiskUsage)
+
+	// Audit log the disk limit hit
+	if s.app.AuditLogger != nil {
+		usedBytes, _ := services.GetDiskUsageBytes(workDir)
+		s.app.AuditLogger.Log(constants.AuditActionDiskLimitHit, getClientIP(r), getAuditUsername(identity), audit.DiskLimitHitDetails{
+			Operation:      operation,
+			DiskUsedBytes:  usedBytes,
+			DiskLimitBytes: maxDiskUsage,
+		})
+	}
+
+	s.handleServiceError(w, err)
+	return false
 }

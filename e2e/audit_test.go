@@ -198,6 +198,8 @@ func TestAuditActionsEndpoint(t *testing.T) {
 		"metadata_set", "metadata_batch", "metadata_apply",
 		// Configuration
 		"config_changed",
+		// Disk Usage
+		"disk_limit_hit",
 	}
 
 	if len(result.Actions) != len(expectedActions) {

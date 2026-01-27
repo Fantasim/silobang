@@ -5,6 +5,9 @@ import { Button } from '@components/ui/Button';
 import {
   MONITORING_LOG_LEVEL_LABELS,
   MONITORING_LOG_LEVELS,
+  MONITORING_DISK_WARNING_PERCENT,
+  MONITORING_DISK_CRITICAL_PERCENT,
+  MONITORING_DISK_LABELS,
 } from '@constants/monitoring';
 import {
   monitoringData,
@@ -81,6 +84,30 @@ function LogLevelSection({ levelInfo }) {
   );
 }
 
+function DiskUsageBar({ percent, label }) {
+  const barColor =
+    percent >= MONITORING_DISK_CRITICAL_PERCENT
+      ? 'var(--terminal-red)'
+      : percent >= MONITORING_DISK_WARNING_PERCENT
+        ? 'var(--terminal-amber)'
+        : 'var(--terminal-green)';
+
+  return (
+    <div class="monitoring-disk-bar-container">
+      <div class="monitoring-disk-bar-header">
+        <span class="monitoring-disk-bar-label">{label}</span>
+        <span class="monitoring-disk-bar-percent">{percent.toFixed(1)}%</span>
+      </div>
+      <div class="monitoring-disk-bar-track">
+        <div
+          class="monitoring-disk-bar-fill"
+          style={{ width: `${Math.min(percent, 100)}%`, background: barColor }}
+        />
+      </div>
+    </div>
+  );
+}
+
 // =============================================================================
 // Main Page
 // =============================================================================
@@ -150,6 +177,15 @@ export function MonitoringPage() {
           <InfoCard icon="hardDrive" title="Max DAT" value={formatBytes(application.max_dat_size_bytes)} variant="size" />
           <InfoCard icon="fileText" title="Max Meta" value={formatBytes(application.max_metadata_value_bytes)} variant="size" />
         </div>
+
+        {application.max_disk_usage_bytes > 0 && (
+          <div class="monitoring-disk-section">
+            <DiskUsageBar
+              percent={(system.project_dir_size_bytes / application.max_disk_usage_bytes) * 100}
+              label={`${MONITORING_DISK_LABELS.STORAGE}: ${formatBytes(system.project_dir_size_bytes)} / ${formatBytes(application.max_disk_usage_bytes)}`}
+            />
+          </div>
+        )}
       </section>
 
       {/* Log Files */}

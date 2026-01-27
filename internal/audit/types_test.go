@@ -37,6 +37,7 @@ func collectAuditActionConstants() []string {
 		constants.AuditActionMetadataBatch,
 		constants.AuditActionMetadataApply,
 		constants.AuditActionConfigChanged,
+		constants.AuditActionDiskLimitHit,
 	}
 }
 
@@ -209,6 +210,8 @@ func TestDetailStructsSerialization(t *testing.T) {
 		{"MetadataApplyDetails", MetadataApplyDetails{QueryPreset: "all", Op: "set", Key: "tag", OperationCount: 5, Succeeded: 5, Failed: 0, Processor: "api"}},
 		// Configuration
 		{"ConfigChangedDetails", ConfigChangedDetails{WorkingDirectory: "/data", IsBootstrap: true}},
+		// Disk Usage
+		{"DiskLimitHitDetails", DiskLimitHitDetails{Operation: "upload", DiskUsedBytes: 5000000000, DiskLimitBytes: 4000000000}},
 	}
 
 	for _, tt := range tests {

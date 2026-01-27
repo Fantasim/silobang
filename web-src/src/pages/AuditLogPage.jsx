@@ -21,6 +21,7 @@ import {
   setUserFilter,
   toggleActionFilter,
   clearActionFilters,
+  selectAllActionFilters,
   cleanup,
   AUDIT_USER_FILTER,
   AUDIT_CONNECTION_STATUS,
@@ -168,6 +169,7 @@ export function AuditLogPage() {
             selected={selectedActions.value}
             onToggle={toggleActionFilter}
             onClear={clearActionFilters}
+            onSelectAll={selectAllActionFilters}
           />
         </div>
 

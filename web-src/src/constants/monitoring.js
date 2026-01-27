@@ -10,3 +10,12 @@ export const MONITORING_LOG_LEVEL_LABELS = {
   info: 'Info',
   debug: 'Debug',
 };
+
+// Disk usage thresholds (percentage)
+export const MONITORING_DISK_WARNING_PERCENT = 80;
+export const MONITORING_DISK_CRITICAL_PERCENT = 90;
+
+// Disk section labels
+export const MONITORING_DISK_LABELS = {
+  STORAGE: 'Storage',
+};

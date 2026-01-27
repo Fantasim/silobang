@@ -107,6 +107,9 @@ var (
 	ErrAuthInvalidConstraints   = NewServiceError(constants.ErrCodeAuthInvalidConstraints, "invalid grant constraints")
 	ErrAuthGrantActionDenied    = NewServiceError(constants.ErrCodeAuthGrantActionDenied, "not permitted to grant this action")
 
+	// Disk usage errors
+	ErrDiskLimitExceeded = NewServiceError(constants.ErrCodeDiskLimitExceeded, "disk usage limit exceeded")
+
 	// Internal errors
 	ErrInternal = NewServiceError(constants.ErrCodeInternalError, "internal server error")
 )

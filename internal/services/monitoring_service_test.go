@@ -490,6 +490,128 @@ func TestCalculateDirSize_NonExistentDir(t *testing.T) {
 }
 
 // =============================================================================
+// Disk Usage Tests
+// =============================================================================
+
+func TestGetDiskUsageBytes(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	used, err := GetDiskUsageBytes(tmpDir)
+	if err != nil {
+		t.Fatalf("GetDiskUsageBytes failed: %v", err)
+	}
+	if used == 0 {
+		t.Error("Expected disk usage > 0")
+	}
+}
+
+func TestGetDiskUsageBytes_InvalidPath(t *testing.T) {
+	_, err := GetDiskUsageBytes("/nonexistent/path/that/does/not/exist")
+	if err == nil {
+		t.Error("Expected error for non-existent path")
+	}
+}
+
+// =============================================================================
+// CheckDiskLimit Tests
+// =============================================================================
+
+func TestCheckDiskLimit_Unlimited(t *testing.T) {
+	err := CheckDiskLimit("/tmp", 0)
+	if err != nil {
+		t.Errorf("Expected no error for unlimited (0), got: %v", err)
+	}
+}
+
+func TestCheckDiskLimit_NegativeLimit(t *testing.T) {
+	err := CheckDiskLimit("/tmp", -1)
+	if err != nil {
+		t.Errorf("Expected no error for negative limit, got: %v", err)
+	}
+}
+
+func TestCheckDiskLimit_WithinLimit(t *testing.T) {
+	tmpDir := t.TempDir()
+	// Use a very large limit that current disk usage won't exceed
+	err := CheckDiskLimit(tmpDir, 999_999_999_999_999)
+	if err != nil {
+		t.Errorf("Expected no error for large limit, got: %v", err)
+	}
+}
+
+func TestCheckDiskLimit_ExceededLimit(t *testing.T) {
+	tmpDir := t.TempDir()
+	// Use a limit of 1 byte — current disk usage will always exceed this
+	err := CheckDiskLimit(tmpDir, 1)
+	if err == nil {
+		t.Fatal("Expected error for 1-byte limit")
+	}
+
+	code, ok := IsServiceError(err)
+	if !ok {
+		t.Fatal("Expected ServiceError")
+	}
+	if code != constants.ErrCodeDiskLimitExceeded {
+		t.Errorf("Expected error code %s, got %s", constants.ErrCodeDiskLimitExceeded, code)
+	}
+}
+
+func TestCheckDiskLimit_InvalidPath_FailsClosed(t *testing.T) {
+	err := CheckDiskLimit("/nonexistent/path/that/does/not/exist", 999_999_999_999)
+	if err == nil {
+		t.Fatal("Expected error for unreadable disk stats (fail closed)")
+	}
+
+	code, ok := IsServiceError(err)
+	if !ok {
+		t.Fatal("Expected ServiceError")
+	}
+	if code != constants.ErrCodeDiskLimitExceeded {
+		t.Errorf("Expected error code %s, got %s", constants.ErrCodeDiskLimitExceeded, code)
+	}
+}
+
+// =============================================================================
+// MaxDiskUsageBytes in ApplicationInfo Tests
+// =============================================================================
+
+func TestGetMonitoringInfo_MaxDiskUsageBytes(t *testing.T) {
+	tmpDir := t.TempDir()
+	setupLogDirs(t, tmpDir)
+
+	mock := newMonitoringMock(tmpDir)
+	mock.cfg.MaxDiskUsage = 5_000_000_000 // 5GB
+	svc := NewMonitoringService(mock, mock.log)
+
+	info, err := svc.GetMonitoringInfo()
+	if err != nil {
+		t.Fatalf("GetMonitoringInfo failed: %v", err)
+	}
+
+	if info.Application.MaxDiskUsageBytes != 5_000_000_000 {
+		t.Errorf("Expected MaxDiskUsageBytes=5000000000, got %d", info.Application.MaxDiskUsageBytes)
+	}
+}
+
+func TestGetMonitoringInfo_MaxDiskUsageBytes_Zero(t *testing.T) {
+	tmpDir := t.TempDir()
+	setupLogDirs(t, tmpDir)
+
+	mock := newMonitoringMock(tmpDir)
+	// Default is 0 (unlimited)
+	svc := NewMonitoringService(mock, mock.log)
+
+	info, err := svc.GetMonitoringInfo()
+	if err != nil {
+		t.Fatalf("GetMonitoringInfo failed: %v", err)
+	}
+
+	if info.Application.MaxDiskUsageBytes != 0 {
+		t.Errorf("Expected MaxDiskUsageBytes=0 for unlimited, got %d", info.Application.MaxDiskUsageBytes)
+	}
+}
+
+// =============================================================================
 // Regression: No runtime field in JSON
 // =============================================================================
 

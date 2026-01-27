@@ -100,6 +100,20 @@ func (s *Server) handleBatchMetadata(w http.ResponseWriter, r *http.Request) {
 		req.ProcessorVersion = "1.0"
 	}
 
+	// Check disk usage limit before batch write (set operations grow SQLite)
+	hasSetOps := false
+	for _, op := range req.Operations {
+		if op.Op == constants.BatchMetadataOpSet {
+			hasSetOps = true
+			break
+		}
+	}
+	if hasSetOps {
+		if !s.checkDiskLimit(w, r, identity, "metadata_batch") {
+			return
+		}
+	}
+
 	// Convert input operations to database operations
 	dbOperations := make([]database.BatchOperation, len(req.Operations))
 	for i, op := range req.Operations {
@@ -290,6 +304,13 @@ func (s *Server) handleApplyMetadata(w http.ResponseWriter, r *http.Request) {
 	if req.Op != constants.BatchMetadataOpSet && req.Op != constants.BatchMetadataOpDelete {
 		WriteError(w, http.StatusBadRequest, "op must be 'set' or 'delete'", constants.ErrCodeBatchInvalidOperation)
 		return
+	}
+
+	// Check disk usage limit before apply write (set operations grow SQLite)
+	if req.Op == constants.BatchMetadataOpSet {
+		if !s.checkDiskLimit(w, r, identity, "metadata_apply") {
+			return
+		}
 	}
 
 	if req.Processor == "" {

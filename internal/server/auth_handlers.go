@@ -30,10 +30,18 @@ func (s *Server) requireAuth(w http.ResponseWriter, r *http.Request) *auth.Ident
 // authorize evaluates a policy for the given identity and action context.
 // Returns true if allowed, writes the appropriate error response and returns false if denied.
 func (s *Server) authorize(w http.ResponseWriter, identity *auth.Identity, ctx *auth.ActionContext) bool {
+	_, allowed := s.authorizeWithResult(w, identity, ctx)
+	return allowed
+}
+
+// authorizeWithResult evaluates a policy and returns the full PolicyResult.
+// Use this when the handler needs access to the matched grant's constraints
+// (e.g., audit handlers checking CanViewAll).
+// Returns (result, true) if allowed, writes the error response and returns (nil, false) if denied.
+func (s *Server) authorizeWithResult(w http.ResponseWriter, identity *auth.Identity, ctx *auth.ActionContext) (*auth.PolicyResult, bool) {
 	if s.app.Services.Auth == nil {
-		// Auth not initialized (no DB) — deny by default
 		WriteError(w, http.StatusServiceUnavailable, "Auth system not available", constants.ErrCodeAuthRequired)
-		return false
+		return nil, false
 	}
 
 	result := s.app.Services.Auth.GetEvaluator().Evaluate(identity, ctx)
@@ -43,9 +51,9 @@ func (s *Server) authorize(w http.ResponseWriter, identity *auth.Identity, ctx *
 			status = http.StatusTooManyRequests
 		}
 		WriteError(w, status, result.Reason, result.DeniedCode)
-		return false
+		return nil, false
 	}
-	return true
+	return result, true
 }
 
 // isAuthAvailable returns true if the auth system is initialized.

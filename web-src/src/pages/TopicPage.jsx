@@ -20,7 +20,8 @@ import {
 import { navigate } from '../Router';
 import { formatBytes, formatDateTime } from '../utils/format';
 import { api } from '@services/api';
-import { canUpload, canVerify } from '@store/auth';
+import { canUpload, canVerify, canQuery } from '@store/auth';
+import { RECENT_FILES_PRESET, RECENT_FILES_DAYS, RECENT_FILES_LIMIT } from '@constants/query';
 
 export function TopicPage({ topicName }) {
   const [verifying, setVerifying] = useState(false);
@@ -113,6 +114,16 @@ export function TopicPage({ topicName }) {
           </span>
         </div>
         <div class="page-header-right">
+          {canQuery.value && (
+            <Button
+              variant="ghost"
+              onClick={() => navigate(
+                `/query?preset=${RECENT_FILES_PRESET}&topics=${encodeURIComponent(topicName)}&days=${RECENT_FILES_DAYS}&limit=${RECENT_FILES_LIMIT}`
+              )}
+            >
+              Recent Files
+            </Button>
+          )}
           {canVerify.value && (
             <Button
               variant="ghost"

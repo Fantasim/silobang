@@ -2,6 +2,7 @@ package e2e
 
 import (
 	"encoding/json"
+	"net/http"
 	"testing"
 )
 
@@ -294,6 +295,256 @@ func TestPromptsBaseURLRendered(t *testing.T) {
 		if !containsAny(template, "http://localhost:") {
 			t.Errorf("prompt %s missing rendered base URL", name)
 		}
+	}
+}
+
+// =============================================================================
+// Schema/Prompts Caching — Cache-Control & ETag
+// =============================================================================
+
+// TestSchemaEndpoint_CacheHeaders verifies the schema endpoint returns
+// proper cache headers (Cache-Control: immutable, ETag).
+func TestSchemaEndpoint_CacheHeaders(t *testing.T) {
+	ts := StartTestServer(t)
+	ts.ConfigureWorkDir(t)
+
+	resp, err := ts.GET("/api/schema")
+	if err != nil {
+		t.Fatalf("schema request failed: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		t.Fatalf("expected status 200, got %d", resp.StatusCode)
+	}
+
+	// Should have immutable cache control (overrides SecurityHeaders' no-store)
+	cc := resp.Header.Get("Cache-Control")
+	if cc != "public, max-age=86400, immutable" {
+		t.Errorf("Expected Cache-Control: public, max-age=86400, immutable, got %q", cc)
+	}
+
+	// Should have ETag
+	etag := resp.Header.Get("ETag")
+	if etag == "" {
+		t.Error("Expected ETag header on schema response")
+	}
+	if etag[0] != '"' || etag[len(etag)-1] != '"' {
+		t.Errorf("ETag should be quoted, got %q", etag)
+	}
+}
+
+// TestSchemaEndpoint_ConditionalRequest_304 verifies that sending
+// If-None-Match with the correct ETag returns 304 Not Modified.
+func TestSchemaEndpoint_ConditionalRequest_304(t *testing.T) {
+	ts := StartTestServer(t)
+	ts.ConfigureWorkDir(t)
+
+	// First request to get ETag
+	resp1, err := ts.GET("/api/schema")
+	if err != nil {
+		t.Fatalf("first request failed: %v", err)
+	}
+	resp1.Body.Close()
+
+	etag := resp1.Header.Get("ETag")
+	if etag == "" {
+		t.Fatal("Expected ETag from first request")
+	}
+
+	// Second request with If-None-Match
+	client := &http.Client{
+		Transport: &http.Transport{
+			DisableCompression: true,
+		},
+	}
+	req, err := http.NewRequest("GET", ts.URL+"/api/schema", nil)
+	if err != nil {
+		t.Fatalf("Failed to create request: %v", err)
+	}
+	req.Header.Set("If-None-Match", etag)
+	if ts.APIKey != "" {
+		req.Header.Set("X-API-Key", ts.APIKey)
+	}
+
+	resp2, err := client.Do(req)
+	if err != nil {
+		t.Fatalf("conditional request failed: %v", err)
+	}
+	defer resp2.Body.Close()
+
+	if resp2.StatusCode != 304 {
+		t.Errorf("Expected 304 Not Modified, got %d", resp2.StatusCode)
+	}
+}
+
+// TestSchemaEndpoint_StableETag verifies that repeated requests return
+// the same ETag (schema is immutable).
+func TestSchemaEndpoint_StableETag(t *testing.T) {
+	ts := StartTestServer(t)
+	ts.ConfigureWorkDir(t)
+
+	resp1, err := ts.GET("/api/schema")
+	if err != nil {
+		t.Fatalf("first request failed: %v", err)
+	}
+	etag1 := resp1.Header.Get("ETag")
+	resp1.Body.Close()
+
+	resp2, err := ts.GET("/api/schema")
+	if err != nil {
+		t.Fatalf("second request failed: %v", err)
+	}
+	etag2 := resp2.Header.Get("ETag")
+	resp2.Body.Close()
+
+	if etag1 != etag2 {
+		t.Errorf("ETag should be stable across requests: %q != %q", etag1, etag2)
+	}
+}
+
+// TestPromptsEndpoint_CacheHeaders verifies the prompts list endpoint
+// returns proper cache headers.
+func TestPromptsEndpoint_CacheHeaders(t *testing.T) {
+	ts := StartTestServer(t)
+	ts.ConfigureWorkDir(t)
+
+	resp, err := ts.GET("/api/prompts")
+	if err != nil {
+		t.Fatalf("prompts request failed: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		t.Fatalf("expected status 200, got %d", resp.StatusCode)
+	}
+
+	// Should have immutable cache control
+	cc := resp.Header.Get("Cache-Control")
+	if cc != "public, max-age=86400, immutable" {
+		t.Errorf("Expected Cache-Control: public, max-age=86400, immutable, got %q", cc)
+	}
+
+	// Should have ETag
+	etag := resp.Header.Get("ETag")
+	if etag == "" {
+		t.Error("Expected ETag header on prompts response")
+	}
+}
+
+// TestPromptsEndpoint_ConditionalRequest_304 verifies that prompts list
+// supports conditional requests with If-None-Match.
+func TestPromptsEndpoint_ConditionalRequest_304(t *testing.T) {
+	ts := StartTestServer(t)
+	ts.ConfigureWorkDir(t)
+
+	// First request to get ETag
+	resp1, err := ts.GET("/api/prompts")
+	if err != nil {
+		t.Fatalf("first request failed: %v", err)
+	}
+	resp1.Body.Close()
+
+	etag := resp1.Header.Get("ETag")
+	if etag == "" {
+		t.Fatal("Expected ETag from first request")
+	}
+
+	// Second request with If-None-Match
+	client := &http.Client{
+		Transport: &http.Transport{
+			DisableCompression: true,
+		},
+	}
+	req, err := http.NewRequest("GET", ts.URL+"/api/prompts", nil)
+	if err != nil {
+		t.Fatalf("Failed to create request: %v", err)
+	}
+	req.Header.Set("If-None-Match", etag)
+	if ts.APIKey != "" {
+		req.Header.Set("X-API-Key", ts.APIKey)
+	}
+
+	resp2, err := client.Do(req)
+	if err != nil {
+		t.Fatalf("conditional request failed: %v", err)
+	}
+	defer resp2.Body.Close()
+
+	if resp2.StatusCode != 304 {
+		t.Errorf("Expected 304 Not Modified, got %d", resp2.StatusCode)
+	}
+}
+
+// TestSchemaEndpoint_PreCompressedGzip verifies that the schema endpoint
+// serves pre-compressed gzip data when client accepts it.
+func TestSchemaEndpoint_PreCompressedGzip(t *testing.T) {
+	ts := StartTestServer(t)
+	ts.ConfigureWorkDir(t)
+
+	client := &http.Client{
+		Transport: &http.Transport{
+			DisableCompression: true,
+		},
+	}
+
+	req, err := http.NewRequest("GET", ts.URL+"/api/schema", nil)
+	if err != nil {
+		t.Fatalf("Failed to create request: %v", err)
+	}
+	req.Header.Set("Accept-Encoding", "gzip")
+	if ts.APIKey != "" {
+		req.Header.Set("X-API-Key", ts.APIKey)
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		t.Fatalf("request failed: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		t.Fatalf("expected status 200, got %d", resp.StatusCode)
+	}
+
+	if resp.Header.Get("Content-Encoding") != "gzip" {
+		t.Errorf("Expected Content-Encoding: gzip, got %q", resp.Header.Get("Content-Encoding"))
+	}
+
+	// Verify ETag and Cache-Control are also present
+	if resp.Header.Get("ETag") == "" {
+		t.Error("Expected ETag header")
+	}
+	if resp.Header.Get("Cache-Control") != "public, max-age=86400, immutable" {
+		t.Errorf("Expected immutable Cache-Control, got %q", resp.Header.Get("Cache-Control"))
+	}
+}
+
+// TestSpecificPrompt_NoCacheHeaders verifies that individual prompt endpoints
+// (GET /api/prompts/:name) do NOT return cache headers (dynamic path).
+func TestSpecificPrompt_NoCacheHeaders(t *testing.T) {
+	ts := StartTestServer(t)
+	ts.ConfigureWorkDir(t)
+
+	resp, err := ts.GET("/api/prompts/batch-metadata")
+	if err != nil {
+		t.Fatalf("prompt request failed: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		t.Fatalf("expected status 200, got %d", resp.StatusCode)
+	}
+
+	// Should NOT have immutable cache control (default SecurityHeaders applies)
+	cc := resp.Header.Get("Cache-Control")
+	if cc == "public, max-age=86400, immutable" {
+		t.Error("Specific prompt endpoint should NOT have immutable Cache-Control")
+	}
+
+	// Should NOT have ETag
+	if resp.Header.Get("ETag") != "" {
+		t.Error("Specific prompt endpoint should NOT have ETag")
 	}
 }
 

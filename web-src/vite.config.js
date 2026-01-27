@@ -1,9 +1,17 @@
 import { defineConfig } from 'vite';
 import preact from '@preact/preset-vite';
+import viteCompression from 'vite-plugin-compression';
 import path from 'path';
 
 export default defineConfig({
-  plugins: [preact()],
+  plugins: [
+    preact(),
+    // Pre-compress static assets at build time for serving from Go's embedded FS.
+    // Brotli: smaller output, preferred by modern browsers.
+    viteCompression({ algorithm: 'brotliCompress', ext: '.br' }),
+    // Gzip: fallback for clients that don't support brotli.
+    viteCompression({ algorithm: 'gzip', ext: '.gz' }),
+  ],
 
   resolve: {
     alias: {

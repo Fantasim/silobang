@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from 'preact/hooks';
 import { ChevronDown, X } from 'lucide-preact';
 import { AUDIT_ACTION_COLORS } from '../../store/audit';
+import { AUDIT_FILTER_LABELS } from '@constants/audit';
 
-export function AuditActionFilter({ actions, selected, onToggle, onClear }) {
+export function AuditActionFilter({ actions, selected, onToggle, onClear, onSelectAll }) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -75,6 +76,23 @@ export function AuditActionFilter({ actions, selected, onToggle, onClear }) {
       {/* Dropdown menu */}
       {isOpen && (
         <div class="audit-action-filter-dropdown">
+          <div class="audit-action-filter-toggle-all">
+            <button
+              type="button"
+              class="audit-action-filter-toggle-btn"
+              onClick={() => {
+                if (selected.length === actions.length) {
+                  onClear();
+                } else {
+                  onSelectAll();
+                }
+              }}
+            >
+              {selected.length === actions.length
+                ? AUDIT_FILTER_LABELS.DESELECT_ALL
+                : AUDIT_FILTER_LABELS.SELECT_ALL}
+            </button>
+          </div>
           {actions.map((action) => (
             <label key={action} class="audit-action-filter-option">
               <input

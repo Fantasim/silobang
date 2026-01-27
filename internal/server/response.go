@@ -83,6 +83,8 @@ func (s *Server) handleServiceError(w http.ResponseWriter, err error) {
 		status = http.StatusBadRequest
 	case constants.ErrCodeQueryError, constants.ErrCodeMetadataError:
 		status = http.StatusInternalServerError
+	case constants.ErrCodeDiskLimitExceeded:
+		status = http.StatusInsufficientStorage
 	}
 
 	WriteError(w, status, err.Error(), code)

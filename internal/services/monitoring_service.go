@@ -1,11 +1,13 @@
 package services
 
 import (
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
+	"syscall"
 	"time"
 
 	"silobang/internal/constants"
@@ -53,6 +55,7 @@ type ApplicationInfo struct {
 	Port                  int    `json:"port"`
 	MaxDatSizeBytes       int64  `json:"max_dat_size_bytes"`
 	MaxMetadataValueBytes int    `json:"max_metadata_value_bytes"`
+	MaxDiskUsageBytes     int64  `json:"max_disk_usage_bytes"`
 	TopicsTotal           int    `json:"topics_total"`
 	TopicsHealthy         int    `json:"topics_healthy"`
 	TopicsUnhealthy       int    `json:"topics_unhealthy"`
@@ -145,6 +148,42 @@ func (s *MonitoringService) getSystemInfo(workDir string) SystemInfo {
 	return si
 }
 
+// GetDiskUsageBytes returns the number of bytes used on the filesystem containing the given path.
+// This is exported for use by other services (e.g. disk limit checks).
+func GetDiskUsageBytes(path string) (uint64, error) {
+	var stat syscall.Statfs_t
+	if err := syscall.Statfs(path, &stat); err != nil {
+		return 0, err
+	}
+	total := stat.Blocks * uint64(stat.Bsize)
+	free := stat.Bfree * uint64(stat.Bsize)
+	return total - free, nil
+}
+
+// CheckDiskLimit verifies that disk usage is below the configured limit.
+// Returns nil if no limit is set (maxDiskUsage == 0) or if usage is within bounds.
+// Returns ErrDiskLimitExceeded if usage exceeds the limit.
+// Fails closed: returns an error if disk stats cannot be read.
+func CheckDiskLimit(path string, maxDiskUsage int64) error {
+	if maxDiskUsage <= 0 {
+		return nil // No limit configured
+	}
+
+	usedBytes, err := GetDiskUsageBytes(path)
+	if err != nil {
+		// Fail closed: if we can't read disk stats, reject the operation
+		return NewServiceError(constants.ErrCodeDiskLimitExceeded,
+			"disk usage limit check failed: unable to read disk stats")
+	}
+
+	if usedBytes >= uint64(maxDiskUsage) {
+		return NewServiceError(constants.ErrCodeDiskLimitExceeded,
+			fmt.Sprintf("disk usage limit exceeded: used %d bytes, limit %d bytes", usedBytes, maxDiskUsage))
+	}
+
+	return nil
+}
+
 // calculateDirSize walks the directory tree and sums all regular file sizes.
 // Returns 0 if the directory cannot be walked.
 func (s *MonitoringService) calculateDirSize(dirPath string) uint64 {
@@ -213,6 +252,7 @@ func (s *MonitoringService) getApplicationInfo() ApplicationInfo {
 		Port:                  cfg.Port,
 		MaxDatSizeBytes:       cfg.MaxDatSize,
 		MaxMetadataValueBytes: cfg.Metadata.MaxValueBytes,
+		MaxDiskUsageBytes:     cfg.MaxDiskUsage,
 	}
 
 	// Topic counts

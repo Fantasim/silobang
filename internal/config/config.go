@@ -62,6 +62,7 @@ type Config struct {
 	WorkingDirectory string             `yaml:"working_directory"`
 	Port             int                `yaml:"port"`
 	MaxDatSize       int64              `yaml:"max_dat_size"`
+	MaxDiskUsage     int64              `yaml:"max_disk_usage"`
 	Auth             AuthConfig         `yaml:"auth"`
 	BulkDownload     BulkDownloadConfig `yaml:"bulk_download"`
 	Audit            AuditConfig        `yaml:"audit"`
@@ -174,6 +175,11 @@ func (cfg *Config) validate() error {
 		errs = append(errs, "monitoring.log_file_max_read_bytes must be >= 1024 (1KB)")
 	}
 
+	// Disk usage validation (0 = unlimited, otherwise must be >= minimum)
+	if cfg.MaxDiskUsage != constants.DefaultMaxDiskUsageBytes && cfg.MaxDiskUsage < constants.MinMaxDiskUsageBytes {
+		errs = append(errs, fmt.Sprintf("max_disk_usage must be 0 (unlimited) or >= %d (1GB)", constants.MinMaxDiskUsageBytes))
+	}
+
 	if len(errs) > 0 {
 		return fmt.Errorf("config validation failed:\n  - %s", strings.Join(errs, "\n  - "))
 	}
@@ -195,6 +201,11 @@ func (cfg *Config) LogEffectiveValues(log *logger.Logger) {
 	log.Info("config: metadata.max_value_bytes=%d", cfg.Metadata.MaxValueBytes)
 	log.Info("config: batch.max_operations=%d", cfg.Batch.MaxOperations)
 	log.Info("config: monitoring.log_file_max_read_bytes=%d", cfg.Monitoring.LogFileMaxReadBytes)
+	if cfg.MaxDiskUsage > 0 {
+		log.Info("config: max_disk_usage=%d", cfg.MaxDiskUsage)
+	} else {
+		log.Info("config: max_disk_usage=unlimited")
+	}
 }
 
 func GetConfigDir() string {

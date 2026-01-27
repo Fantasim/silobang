@@ -332,6 +332,11 @@ export function clearActionFilters() {
   fetchHistoricalLogs(true);
 }
 
+export function selectAllActionFilters() {
+  selectedActions.value = [...availableActions.value];
+  fetchHistoricalLogs(true);
+}
+
 // =============================================================================
 // CLEANUP
 // =============================================================================

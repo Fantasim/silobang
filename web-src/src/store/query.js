@@ -134,3 +134,34 @@ export function setSorting(column) {
     sortDirection.value = 'asc';
   }
 }
+
+// initFromParams configures the query page from URL parameters and auto-runs.
+// Called when navigating to /query?preset=X&topics=Y&param1=val1.
+// Waits for presets to be loaded, then selects the preset, applies topics
+// and param overrides, and executes the query.
+export async function initFromParams(presetName, topicsList, paramOverrides) {
+  // Ensure presets are loaded
+  if (presets.value.length === 0) {
+    await fetchPresets();
+  }
+
+  // Select the preset (initializes default params)
+  selectPreset(presetName);
+  if (!selectedPreset.value) return;
+
+  // Apply topic filter
+  if (topicsList && topicsList.length > 0) {
+    selectedTopics.value = topicsList;
+  }
+
+  // Override params from URL
+  if (paramOverrides) {
+    queryParams.value = { ...queryParams.value, ...paramOverrides };
+  }
+
+  // Collapse the preset selector since we already have a selection
+  presetSelectorExpanded.value = false;
+
+  // Auto-execute the query
+  await runQuery();
+}

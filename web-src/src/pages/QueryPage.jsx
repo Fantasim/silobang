@@ -15,6 +15,7 @@ import {
   queryError,
   fetchPresets,
   selectedRows,
+  initFromParams,
 } from '@store/query';
 import { fetchTopics } from '@store/topics';
 import { api } from '@services/api';
@@ -23,7 +24,7 @@ import { FILENAME_FORMATS, DEFAULT_FILENAME_FORMAT, DEFAULT_INCLUDE_METADATA } f
 import { canQuery } from '@store/auth';
 import { Icon } from '@components/ui/Icon';
 
-export function QueryPage() {
+export function QueryPage({ initPreset, initTopics, initParams }) {
   if (!canQuery.value) {
     return (
       <div class="permission-denied">
@@ -49,8 +50,14 @@ export function QueryPage() {
   const [applyAllMetadataOpen, setApplyAllMetadataOpen] = useState(false);
 
   useEffect(() => {
-    fetchPresets();
-    fetchTopics(); // Fetch topics for the filter
+    if (initPreset) {
+      // Auto-configure and run from URL params (e.g., topic page "Recent Files" button)
+      fetchTopics();
+      initFromParams(initPreset, initTopics, initParams);
+    } else {
+      fetchPresets();
+      fetchTopics();
+    }
   }, []);
 
   const handleExportJson = () => {

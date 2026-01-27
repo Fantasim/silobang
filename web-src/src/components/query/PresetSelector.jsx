@@ -188,7 +188,6 @@ export function PresetSelector({ hasResults = false }) {
                 {/* Parameters */}
                 {preset.params && preset.params.length > 0 ? (
                   <div class="preset-config-params">
-                    <span class="preset-config-section-title">Parameters</span>
                     <div class="preset-config-params-grid">
                       {preset.params.map(param => (
                         <div key={param.name} class="preset-config-param">
@@ -225,11 +224,6 @@ export function PresetSelector({ hasResults = false }) {
                         None
                       </button>
                     </div>
-                  </div>
-                  <div class="preset-config-topics-hint">
-                    {selectedTopics.value.length === 0
-                      ? 'Searches all available topics'
-                      : `${selectedTopics.value.length} topic${selectedTopics.value.length !== 1 ? 's' : ''} selected`}
                   </div>
                   <div class="preset-config-topic-chips">
                     {topics.map(topic => (

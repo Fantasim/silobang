@@ -282,6 +282,7 @@ type MonitoringApplication struct {
 	Port                  int    `json:"port"`
 	MaxDatSizeBytes       int64  `json:"max_dat_size_bytes"`
 	MaxMetadataValueBytes int    `json:"max_metadata_value_bytes"`
+	MaxDiskUsageBytes     int64  `json:"max_disk_usage_bytes"`
 	TopicsTotal           int    `json:"topics_total"`
 	TopicsHealthy         int    `json:"topics_healthy"`
 	TopicsUnhealthy       int    `json:"topics_unhealthy"`

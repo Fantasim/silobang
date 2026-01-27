@@ -24,13 +24,21 @@ func (s *Server) handleAuditQuery(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !s.authorize(w, identity, &auth.ActionContext{Action: constants.AuthActionViewAudit}) {
+	result, ok := s.authorizeWithResult(w, identity, &auth.ActionContext{Action: constants.AuthActionViewAudit})
+	if !ok {
 		return
 	}
 
 	if s.app.OrchestratorDB == nil {
 		WriteError(w, http.StatusBadRequest, "Not configured", constants.ErrCodeNotConfigured)
 		return
+	}
+
+	// Determine CanViewAll from the matched grant's constraints.
+	// Bootstrap users (admins) have no grant constraints — they always get full access.
+	canViewAll := identity.User.IsBootstrap
+	if !canViewAll && result.MatchedGrant != nil {
+		canViewAll = extractCanViewAll(result.MatchedGrant)
 	}
 
 	// Get requesting client IP and username for filter support
@@ -67,6 +75,15 @@ func (s *Server) handleAuditQuery(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		opts.Filter = filter
+	}
+
+	// Enforce CanViewAll constraint: force filter to "me" when user cannot view all
+	if !canViewAll {
+		if opts.Filter == constants.AuditFilterOthers || opts.Filter == constants.AuditFilterAll {
+			s.logger.Warn("Audit: user %s attempted filter=%q but CanViewAll=false, forcing filter=me",
+				getAuditUsername(identity), opts.Filter)
+			opts.Filter = constants.AuditFilterMe
+		}
 	}
 
 	if since := r.URL.Query().Get("since"); since != "" {
@@ -111,10 +128,11 @@ func (s *Server) handleAuditStream(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !s.authorize(w, identity, &auth.ActionContext{
+	result, ok := s.authorizeWithResult(w, identity, &auth.ActionContext{
 		Action:    constants.AuthActionViewAudit,
 		SubAction: "stream",
-	}) {
+	})
+	if !ok {
 		return
 	}
 
@@ -124,6 +142,12 @@ func (s *Server) handleAuditStream(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Determine CanViewAll from the matched grant's constraints.
+	canViewAll := identity.User.IsBootstrap
+	if !canViewAll && result.MatchedGrant != nil {
+		canViewAll = extractCanViewAll(result.MatchedGrant)
+	}
+
 	// Get client IP and parse filter
 	clientIP := getClientIP(r)
 	filter := r.URL.Query().Get("filter")
@@ -131,6 +155,15 @@ func (s *Server) handleAuditStream(w http.ResponseWriter, r *http.Request) {
 		WriteError(w, http.StatusBadRequest, "Invalid filter. Must be: me, others, or empty",
 			constants.ErrCodeAuditInvalidFilter)
 		return
+	}
+
+	// Enforce CanViewAll constraint: force filter to "me" when user cannot view all
+	if !canViewAll {
+		if filter == constants.AuditFilterOthers || filter == constants.AuditFilterAll {
+			s.logger.Warn("Audit stream: user %s attempted filter=%q but CanViewAll=false, forcing filter=me",
+				getAuditUsername(identity), filter)
+			filter = constants.AuditFilterMe
+		}
 	}
 
 	sse, err := NewSSEWriter(w)
@@ -223,4 +256,19 @@ func (s *Server) handleAuditActions(w http.ResponseWriter, r *http.Request) {
 	WriteSuccess(w, map[string]interface{}{
 		"actions": audit.ValidActions(),
 	})
+}
+
+// extractCanViewAll parses ViewAuditConstraints from a grant and returns the CanViewAll value.
+// Returns false if constraints are missing or malformed (fail-closed).
+func extractCanViewAll(grant *auth.Grant) bool {
+	if grant.ConstraintsJSON == nil {
+		// No constraints = unrestricted access (grant was created without constraints)
+		return true
+	}
+
+	var c auth.ViewAuditConstraints
+	if err := json.Unmarshal([]byte(*grant.ConstraintsJSON), &c); err != nil {
+		return false // Fail-closed: malformed constraints deny broad access
+	}
+	return c.CanViewAll
 }

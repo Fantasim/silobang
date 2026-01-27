@@ -3173,6 +3173,26 @@ tr:hover .cell-hash-actions {
   overflow-y: auto;
 }
 
+.audit-action-filter-toggle-all {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--border-dim);
+}
+
+.audit-action-filter-toggle-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: var(--font-xs);
+  color: var(--text-secondary);
+  cursor: pointer;
+  text-decoration: underline;
+  transition: color var(--transition-fast);
+}
+
+.audit-action-filter-toggle-btn:hover {
+  color: var(--text-primary);
+}
+
 .audit-action-filter-option {
   display: flex;
   align-items: center;
@@ -3479,6 +3499,51 @@ tr:hover .cell-hash-actions {
 
 .monitoring-metrics-grid .service-info-card-value {
   font-size: var(--font-2xl);
+}
+
+/* Disk usage bar */
+.monitoring-disk-section {
+  margin-top: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.monitoring-disk-bar-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.monitoring-disk-bar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.monitoring-disk-bar-label {
+  font-size: var(--font-xs);
+  color: var(--text-secondary);
+}
+
+.monitoring-disk-bar-percent {
+  font-size: var(--font-xs);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.monitoring-disk-bar-track {
+  height: 6px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.monitoring-disk-bar-fill {
+  height: 100%;
+  border-radius: var(--radius-sm);
+  transition: width var(--transition-medium);
 }
 
 /* Log files: 2-column grid */

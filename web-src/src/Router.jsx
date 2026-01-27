@@ -34,7 +34,27 @@ export const routeParams = computed(() => {
     return { page: 'users', userId: parseInt(userMatch[1], 10) };
   }
 
-  if (path === '/query') return { page: 'query' };
+  if (path === '/query') {
+    const search = new URLSearchParams(window.location.search);
+    const preset = search.get('preset') || null;
+    const topicsParam = search.get('topics') || null;
+    const topics = topicsParam ? topicsParam.split(',').filter(Boolean) : null;
+
+    // Collect remaining search params as query param overrides
+    const params = {};
+    for (const [key, value] of search.entries()) {
+      if (key !== 'preset' && key !== 'topics') {
+        params[key] = value;
+      }
+    }
+
+    return {
+      page: 'query',
+      preset,
+      topics,
+      params: Object.keys(params).length > 0 ? params : null,
+    };
+  }
   if (path === '/api') return { page: 'api' };
   if (path === '/audit') return { page: 'audit' };
   if (path === '/monitoring') return { page: 'monitoring' };
@@ -46,7 +66,10 @@ export const routeParams = computed(() => {
 // Navigation function
 export function navigate(path) {
   window.history.pushState({}, '', path);
-  currentPath.value = path;
+  // Store only the pathname — query params are read from window.location.search
+  // by routeParams when needed (e.g., /query?preset=X&topics=Y).
+  const url = new URL(path, window.location.origin);
+  currentPath.value = url.pathname;
 }
 
 export function Router() {
@@ -81,13 +104,13 @@ export function Router() {
   }
 
   // Authenticated — route to pages
-  const { page, name, userId } = routeParams.value;
+  const { page, name, userId, preset, topics, params } = routeParams.value;
 
   switch (page) {
     case 'topic':
       return <TopicPage topicName={name} />;
     case 'query':
-      return <QueryPage />;
+      return <QueryPage initPreset={preset} initTopics={topics} initParams={params} />;
     case 'api':
       return <ApiPage />;
     case 'audit':
