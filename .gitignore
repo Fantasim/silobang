@@ -5,7 +5,7 @@ dist
 .DS_Store
 npm-debug.log*
 ./web/dist
-silobang
+/silobang
 *.zip
 *.tar.gz
 CLAUDE.md
