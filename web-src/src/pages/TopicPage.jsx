@@ -155,6 +155,7 @@ export function TopicPage({ topicName }) {
       )}
 
       {/* Stats Grid */}
+      {/*
       <div class="topic-stats-grid">
         <div class="topic-stat-card">
           <div class="topic-stat-card-label">Files</div>
@@ -182,7 +183,8 @@ export function TopicPage({ topicName }) {
             {stats.last_added ? formatDateTime(stats.last_added) : 'Never'}
           </div>
         </div>
-      </div>
+      </div>\
+      */}
 
       {/* Upload Section - Only for healthy topics */}
       {topic.healthy && (

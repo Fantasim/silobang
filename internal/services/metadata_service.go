@@ -50,6 +50,7 @@ type MetadataSetRequest struct {
 type MetadataSetResult struct {
 	LogID            int64                  `json:"log_id"`
 	ComputedMetadata map[string]interface{} `json:"computed_metadata"`
+	TopicName        string                 `json:"topic_name"`
 }
 
 // Get retrieves asset info and metadata for a hash.
@@ -181,7 +182,9 @@ func (s *MetadataService) Set(hash string, req *MetadataSetRequest) (*MetadataSe
 	return &MetadataSetResult{
 		LogID:            logID,
 		ComputedMetadata: computed,
+		TopicName:        topicName,
 	}, nil
+
 }
 
 // validateMetadataRequest validates a metadata set request.

@@ -381,3 +381,109 @@ func TestReconcile_AuditLogPreserved(t *testing.T) {
 		t.Error("expected at least 1 reconcile_topic_removed audit entry via API")
 	}
 }
+
+// TestReconcile_StatsCacheEvicted verifies that the stats cache is properly
+// evicted when a topic is removed during reconciliation. After reconciliation:
+//   - The removed topic must no longer appear in the cached topic stats
+//   - The service info must be recomputed without the removed topic's metrics
+//   - The surviving topic's stats must remain intact
+func TestReconcile_StatsCacheEvicted(t *testing.T) {
+	ts := StartTestServer(t)
+	ts.ConfigureWorkDir(t)
+
+	// Create two topics with uploads so the cache has data for both
+	ts.CreateTopic(t, "cache-doomed")
+	ts.CreateTopic(t, "cache-survivor")
+
+	ts.UploadFileExpectSuccess(t, "cache-doomed", "doomed1.txt", []byte("doomed-data-1"), "")
+	ts.UploadFileExpectSuccess(t, "cache-doomed", "doomed2.txt", []byte("doomed-data-2"), "")
+	ts.UploadFileExpectSuccess(t, "cache-survivor", "survivor.txt", []byte("survivor-data"), "")
+
+	// Verify stats cache has data for both topics before removal
+	topicsBefore := ts.GetTopics(t)
+	var doomedBefore, survivorBefore *TopicInfo
+	for i := range topicsBefore.Topics {
+		switch topicsBefore.Topics[i].Name {
+		case "cache-doomed":
+			doomedBefore = &topicsBefore.Topics[i]
+		case "cache-survivor":
+			survivorBefore = &topicsBefore.Topics[i]
+		}
+	}
+	if doomedBefore == nil {
+		t.Fatal("expected cache-doomed topic in response before reconciliation")
+	}
+	if survivorBefore == nil {
+		t.Fatal("expected cache-survivor topic in response before reconciliation")
+	}
+
+	// Capture service info before reconciliation
+	if topicsBefore.Service == nil {
+		t.Fatal("expected service info in topics response before reconciliation")
+	}
+	totalHashesBefore := topicsBefore.Service.TotalIndexedHashes
+	topicCountBefore := topicsBefore.Service.TopicsSummary.Total
+
+	// Remove the doomed topic folder from disk
+	doomedPath := filepath.Join(ts.WorkDir, "cache-doomed")
+	if err := os.RemoveAll(doomedPath); err != nil {
+		t.Fatalf("failed to remove topic folder: %v", err)
+	}
+
+	// Run reconciliation
+	result, err := ts.App.Services.Reconcile.Reconcile()
+	if err != nil {
+		t.Fatalf("reconciliation failed: %v", err)
+	}
+	if result.TopicsRemoved != 1 {
+		t.Fatalf("expected 1 topic removed, got %d", result.TopicsRemoved)
+	}
+
+	// Verify stats cache no longer contains the removed topic
+	topicsAfter := ts.GetTopics(t)
+	for _, topic := range topicsAfter.Topics {
+		if topic.Name == "cache-doomed" {
+			t.Error("cache-doomed should not appear in topics list after reconciliation")
+		}
+	}
+
+	// Verify surviving topic's stats are intact
+	var survivorAfter *TopicInfo
+	for i := range topicsAfter.Topics {
+		if topicsAfter.Topics[i].Name == "cache-survivor" {
+			survivorAfter = &topicsAfter.Topics[i]
+			break
+		}
+	}
+	if survivorAfter == nil {
+		t.Fatal("expected cache-survivor topic in response after reconciliation")
+	}
+	survivorFileCount := toInt64FromInterface(survivorAfter.Stats["file_count"])
+	if survivorFileCount != 1 {
+		t.Errorf("survivor file_count after reconcile: got %d, want 1", survivorFileCount)
+	}
+
+	// Verify service info is recomputed correctly
+	if topicsAfter.Service == nil {
+		t.Fatal("expected service info in topics response after reconciliation")
+	}
+
+	// Topic count should decrease by 1
+	topicCountAfter := topicsAfter.Service.TopicsSummary.Total
+	if topicCountAfter != topicCountBefore-1 {
+		t.Errorf("topic count: got %d, want %d", topicCountAfter, topicCountBefore-1)
+	}
+
+	// Total indexed hashes should decrease (2 doomed entries were purged from index)
+	totalHashesAfter := topicsAfter.Service.TotalIndexedHashes
+	if totalHashesAfter >= totalHashesBefore {
+		t.Errorf("total indexed hashes should decrease after reconciliation: before=%d, after=%d",
+			totalHashesBefore, totalHashesAfter)
+	}
+
+	// Total storage should no longer include the doomed topic's sizes
+	if topicsAfter.Service.StorageSummary.TotalAssetSize >= topicsBefore.Service.StorageSummary.TotalAssetSize {
+		t.Errorf("total asset size should decrease after reconciliation: before=%d, after=%d",
+			topicsBefore.Service.StorageSummary.TotalAssetSize, topicsAfter.Service.StorageSummary.TotalAssetSize)
+	}
+}

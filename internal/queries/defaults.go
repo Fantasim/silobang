@@ -81,6 +81,23 @@ func GetDefaultStats() []TopicStat {
 			SQL:    "SELECT COUNT(*) FROM dat_hashes",
 			Format: constants.StatFormatNumber,
 		},
+		{
+			Name:   "extension_breakdown",
+			Label:  "Extensions Breakdown",
+			SQL:    "SELECT json_group_array(json_object('ext', extension, 'count', cnt, 'total_size', ts)) FROM (SELECT extension, COUNT(*) as cnt, SUM(asset_size) as ts FROM assets GROUP BY extension ORDER BY cnt DESC LIMIT 10)",
+			Format: constants.StatFormatText,
+		},
+		{
+			Name:   "avg_metadata_keys",
+			Label:  "Avg Metadata Keys",
+			SQL:    "SELECT CAST(COUNT(DISTINCT key) AS REAL) / MAX(1, (SELECT COUNT(*) FROM assets)) FROM metadata_log WHERE op = 'set'",
+			Format: constants.StatFormatFloat,
+		},
+		{
+			Name:  "recent_dat_files",
+			Label: "Recent DAT Files",
+			Type:  constants.StatTypeDatList,
+		},
 	}
 }
 

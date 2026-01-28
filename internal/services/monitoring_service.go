@@ -19,6 +19,7 @@ import (
 type MonitoringService struct {
 	app    AppState
 	logger *logger.Logger
+	statsCache *StatsCache
 }
 
 // NewMonitoringService creates a new monitoring service instance.
@@ -27,6 +28,12 @@ func NewMonitoringService(app AppState, log *logger.Logger) *MonitoringService {
 		app:    app,
 		logger: log,
 	}
+}
+
+// SetStatsCache sets the stats cache reference for monitoring.
+// Called after StatsCache is initialized in the services container.
+func (s *MonitoringService) SetStatsCache(cache *StatsCache) {
+	s.statsCache = cache
 }
 
 // =============================================================================
@@ -38,6 +45,7 @@ type MonitoringInfo struct {
 	System      SystemInfo      `json:"system"`
 	Application ApplicationInfo `json:"application"`
 	Logs        LogsSummary     `json:"logs"`
+	Service     *ServiceInfoSnapshot `json:"service,omitempty"`
 }
 
 // SystemInfo holds OS-level resource metrics.
@@ -125,6 +133,13 @@ func (s *MonitoringService) GetMonitoringInfo() (*MonitoringInfo, error) {
 
 	// Logs summary
 	info.Logs = s.getLogsSummary(workDir)
+
+	// Include cached service info if available
+	// This provides the monitoring page with topic/storage stats
+	// without requiring a separate API call
+	if s.statsCache != nil && s.statsCache.IsInitialized() {
+		info.Service = s.statsCache.GetServiceInfo()
+	}
 
 	s.logger.Debug("Monitoring: metrics collected successfully")
 	return info, nil

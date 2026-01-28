@@ -87,6 +87,15 @@ const (
 	StatFormatText   = "text"
 )
 
+// Stats cache stat types
+const (
+	StatTypeDatList  = "dat_list"
+	StatTypeDatCount = "dat_count"
+)
+
+// DatListRecentCount is the number of recent DAT files to include in stats
+const DatListRecentCount = 5
+
 // Validation
 const (
 	TopicNameRegex  = `^[a-z0-9_-]+$`

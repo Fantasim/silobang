@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 
 	"silobang/internal/constants"
+	"silobang/internal/services"
 	"silobang/internal/storage"
 	"silobang/internal/version"
 )
@@ -16,6 +17,7 @@ type ServiceInfo struct {
 	TopicsSummary      TopicsSummary  `json:"topics_summary"`
 	StorageSummary     StorageSummary `json:"storage_summary"`
 	VersionInfo        VersionInfo    `json:"version_info"`
+	MaxDiskUsageBytes  int64          `json:"max_disk_usage_bytes"`
 }
 
 // TopicsSummary provides counts of topics by health status
@@ -51,6 +53,7 @@ func (s *Server) getServiceInfo(topicStats map[string]map[string]interface{}) (*
 			HeaderSize:  constants.HeaderSize,
 		},
 	}
+	info.MaxDiskUsageBytes = s.app.Config.MaxDiskUsage
 
 	// Orchestrator DB size
 	orchDBSize, err := s.getOrchestratorDBSize()
@@ -70,6 +73,33 @@ func (s *Server) getServiceInfo(topicStats map[string]map[string]interface{}) (*
 	info.TopicsSummary, info.StorageSummary = s.aggregateTopicsStats(topicStats, totalHashes)
 
 	return info, nil
+}
+
+// enrichCachedServiceInfo converts a cached ServiceInfoSnapshot into a full
+// ServiceInfo by adding VersionInfo (which the cache does not track).
+func (s *Server) enrichCachedServiceInfo(cached *services.ServiceInfoSnapshot) *ServiceInfo {
+	return &ServiceInfo{
+		OrchestratorDBSize: cached.OrchestratorDBSize,
+		TotalIndexedHashes: cached.TotalIndexedHashes,
+		TopicsSummary: TopicsSummary{
+			Total:     cached.TopicsSummary.Total,
+			Healthy:   cached.TopicsSummary.Healthy,
+			Unhealthy: cached.TopicsSummary.Unhealthy,
+		},
+		StorageSummary: StorageSummary{
+			TotalDatSize:   cached.StorageSummary.TotalDatSize,
+			TotalDbSize:    cached.StorageSummary.TotalDbSize,
+			TotalAssetSize: cached.StorageSummary.TotalAssetSize,
+			TotalDatFiles:  cached.StorageSummary.TotalDatFiles,
+			AvgAssetSize:   cached.StorageSummary.AvgAssetSize,
+		},
+		VersionInfo: VersionInfo{
+			AppVersion:  version.Version,
+			BlobVersion: constants.BlobVersion,
+			HeaderSize:  constants.HeaderSize,
+		},
+		MaxDiskUsageBytes: cached.MaxDiskUsageBytes,
+	}
 }
 
 // getOrchestratorDBSize returns the file size of the orchestrator database

@@ -253,6 +253,36 @@ func (s *ConfigService) GetTopicStats(topicName string) (map[string]interface{},
 			} else {
 				value = datSize
 			}
+		case constants.StatTypeDatList:
+			// Returns last N .dat files with sizes
+			datFiles, datErr := storage.ListDatFiles(topicPath)
+			if datErr == nil && len(datFiles) > 0 {
+				start := len(datFiles) - constants.DatListRecentCount
+				if start < 0 {
+					start = 0
+				}
+				recent := datFiles[start:]
+				datList := make([]map[string]interface{}, 0, len(recent))
+				for _, f := range recent {
+					fpath := filepath.Join(topicPath, f)
+					if info, statErr := os.Stat(fpath); statErr == nil {
+						datList = append(datList, map[string]interface{}{
+							"name": f,
+							"size": info.Size(),
+						})
+					}
+				}
+				value = datList
+			} else {
+				value = []map[string]interface{}{}
+			}
+		case constants.StatTypeDatCount:
+			count, countErr := storage.CountDatFiles(topicPath)
+			if countErr == nil {
+				value = count
+			} else {
+				value = 0
+			}
 		default:
 			// SQL query
 			if stat.SQL != "" {

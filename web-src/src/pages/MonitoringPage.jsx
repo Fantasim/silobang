@@ -5,9 +5,6 @@ import { Button } from '@components/ui/Button';
 import {
   MONITORING_LOG_LEVEL_LABELS,
   MONITORING_LOG_LEVELS,
-  MONITORING_DISK_WARNING_PERCENT,
-  MONITORING_DISK_CRITICAL_PERCENT,
-  MONITORING_DISK_LABELS,
 } from '@constants/monitoring';
 import {
   monitoringData,
@@ -18,15 +15,16 @@ import {
   cleanupMonitoring,
 } from '@store/monitoring';
 import { api } from '@services/api';
-import { formatBytes, formatUptime, formatDateTime } from '../utils/format';
+import { formatBytes, formatUptime, formatDateTime, formatPercent, getStorageThreshold } from '../utils/format';
 import { canManageConfig } from '@store/auth';
 import { Icon } from '@components/ui/Icon';
+import { DetailTooltip, DetailRow } from '@components/ui/DetailTooltip';
 
 // =============================================================================
 // Sub-components
 // =============================================================================
 
-function InfoCard({ title, value, variant, icon }) {
+function InfoCard({ title, value, variant, icon, subtitle, subtitleColor }) {
   const valueClass = variant
     ? `service-info-card-value service-info-card-value--${variant}`
     : 'service-info-card-value';
@@ -37,6 +35,11 @@ function InfoCard({ title, value, variant, icon }) {
         <span class="service-info-card-title">{title}</span>
       </div>
       <div class={valueClass}>{value}</div>
+      {subtitle && (
+        <div class="service-info-card-subtitle" style={subtitleColor ? { color: subtitleColor } : undefined}>
+          {subtitle}
+        </div>
+      )}
     </div>
   );
 }
@@ -84,30 +87,6 @@ function LogLevelSection({ levelInfo }) {
   );
 }
 
-function DiskUsageBar({ percent, label }) {
-  const barColor =
-    percent >= MONITORING_DISK_CRITICAL_PERCENT
-      ? 'var(--terminal-red)'
-      : percent >= MONITORING_DISK_WARNING_PERCENT
-        ? 'var(--terminal-amber)'
-        : 'var(--terminal-green)';
-
-  return (
-    <div class="monitoring-disk-bar-container">
-      <div class="monitoring-disk-bar-header">
-        <span class="monitoring-disk-bar-label">{label}</span>
-        <span class="monitoring-disk-bar-percent">{percent.toFixed(1)}%</span>
-      </div>
-      <div class="monitoring-disk-bar-track">
-        <div
-          class="monitoring-disk-bar-fill"
-          style={{ width: `${Math.min(percent, 100)}%`, background: barColor }}
-        />
-      </div>
-    </div>
-  );
-}
-
 // =============================================================================
 // Main Page
 // =============================================================================
@@ -146,12 +125,25 @@ export function MonitoringPage() {
 
   if (!data) return null;
 
-  const { system, application, logs } = data;
+  const { system, application, logs, service } = data;
 
   // Only show warn/error log levels
   const visibleLevels = logs.levels.filter((l) =>
     MONITORING_LOG_LEVELS.includes(l.level)
   );
+
+  // Storage threshold for color coding
+  const hasMaxDisk = application.max_disk_usage_bytes > 0;
+  const storageThreshold = hasMaxDisk
+    ? getStorageThreshold(system.project_dir_size_bytes, application.max_disk_usage_bytes)
+    : { cssClass: 'storage-ok', percent: 0 };
+  const storageValue = hasMaxDisk
+    ? `${formatBytes(system.project_dir_size_bytes)} / ${formatBytes(application.max_disk_usage_bytes)} (${formatPercent(system.project_dir_size_bytes, application.max_disk_usage_bytes)})`
+    : formatBytes(system.project_dir_size_bytes);
+
+  // Service-level totals from cached stats
+  const topicsSummary = service?.topics_summary;
+  const storageSummary = service?.storage_summary;
 
   return (
     <div>
@@ -164,7 +156,55 @@ export function MonitoringPage() {
 
       {error && <ErrorBanner message={error} />}
 
-      {/* System & Application — single compact row */}
+      {/* Service Overview — stats from cache */}
+      {service && (
+        <section class="monitoring-section">
+          <h2 class="monitoring-section-title">
+            <Icon name="layers" size={16} color="var(--terminal-green)" />
+            Service Overview
+          </h2>
+          <div class="monitoring-metrics-grid">
+            <InfoCard
+              icon="box"
+              title="Topics"
+              value={topicsSummary?.total || 0}
+              variant="count"
+              subtitle={topicsSummary?.unhealthy > 0 ? `${topicsSummary.unhealthy} unhealthy` : 'All healthy'}
+              subtitleColor={topicsSummary?.unhealthy > 0 ? 'var(--terminal-red)' : 'var(--terminal-green)'}
+            />
+            <InfoCard
+              icon="fileText"
+              title="Total DAT"
+              value={storageSummary?.total_dat_files || 0}
+              variant="count"
+            />
+            <InfoCard
+              icon="layers"
+              title="Indexed Assets"
+              value={(service.total_indexed_hashes || 0).toLocaleString()}
+              variant="count"
+            />
+            <DetailTooltip
+              title="Storage Breakdown"
+              preferredPosition="bottom"
+              trigger={
+                <InfoCard
+                  icon="hardDrive"
+                  title="Total Storage"
+                  value={storageValue}
+                  variant={storageThreshold.cssClass}
+                />
+              }
+            >
+              <DetailRow label="DAT Files" value={formatBytes(storageSummary?.total_dat_size)} />
+              <DetailRow label="Databases" value={formatBytes(storageSummary?.total_db_size)} />
+              <DetailRow label="Orchestrator DB" value={formatBytes(service.orchestrator_db_size)} />
+            </DetailTooltip>
+          </div>
+        </section>
+      )}
+
+      {/* System Resources */}
       <section class="monitoring-section">
         <h2 class="monitoring-section-title">
           <Icon name="server" size={16} color="var(--terminal-green)" />
@@ -172,20 +212,60 @@ export function MonitoringPage() {
         </h2>
         <div class="monitoring-metrics-grid">
           <InfoCard icon="cpu" title="RAM" value={`${formatBytes(system.ram_used_bytes)} / ${formatBytes(system.ram_total_bytes)}`} variant="size" />
-          <InfoCard icon="hardDrive" title="Storage" value={formatBytes(system.project_dir_size_bytes)} variant="size" />
-          <InfoCard icon="clock" title="Uptime" value={formatUptime(application.uptime_seconds)} />
-          <InfoCard icon="hardDrive" title="Max DAT" value={formatBytes(application.max_dat_size_bytes)} variant="size" />
-          <InfoCard icon="fileText" title="Max Meta" value={formatBytes(application.max_metadata_value_bytes)} variant="size" />
+          <InfoCard icon="hardDrive" title="Working Dir" value={storageValue} variant={storageThreshold.cssClass}
+            subtitle={hasMaxDisk ? undefined : 'No limit set'}
+            subtitleColor="var(--text-dim)"
+          />
+          <InfoCard icon="clock" title="Uptime" value={formatUptime(application.uptime_seconds)}
+            subtitle={`Started ${formatDateTime(application.started_at)}`}
+          />
         </div>
+      </section>
 
-        {application.max_disk_usage_bytes > 0 && (
-          <div class="monitoring-disk-section">
-            <DiskUsageBar
-              percent={(system.project_dir_size_bytes / application.max_disk_usage_bytes) * 100}
-              label={`${MONITORING_DISK_LABELS.STORAGE}: ${formatBytes(system.project_dir_size_bytes)} / ${formatBytes(application.max_disk_usage_bytes)}`}
-            />
+      {/* Application Configuration */}
+      <section class="monitoring-section">
+        <h2 class="monitoring-section-title">
+          <Icon name="fileText" size={16} color="var(--terminal-green)" />
+          Configuration
+        </h2>
+        <div class="monitoring-config-grid">
+          <div class="monitoring-config-row">
+            <span class="monitoring-config-label">Working Directory</span>
+            <span class="monitoring-config-value">{application.working_directory || '-'}</span>
           </div>
-        )}
+          <div class="monitoring-config-row">
+            <span class="monitoring-config-label">Port</span>
+            <span class="monitoring-config-value">{application.port}</span>
+          </div>
+          <div class="monitoring-config-row">
+            <span class="monitoring-config-label">Max DAT Size</span>
+            <span class="monitoring-config-value">{formatBytes(application.max_dat_size_bytes)}</span>
+          </div>
+          <div class="monitoring-config-row">
+            <span class="monitoring-config-label">Max Meta Value</span>
+            <span class="monitoring-config-value">{formatBytes(application.max_metadata_value_bytes)}</span>
+          </div>
+          <div class="monitoring-config-row">
+            <span class="monitoring-config-label">Max Disk Usage</span>
+            <span class="monitoring-config-value">{hasMaxDisk ? formatBytes(application.max_disk_usage_bytes) : 'Unlimited'}</span>
+          </div>
+          {service?.version_info && (
+            <>
+              <div class="monitoring-config-row">
+                <span class="monitoring-config-label">App Version</span>
+                <span class="monitoring-config-value">{service.version_info.app_version}</span>
+              </div>
+              <div class="monitoring-config-row">
+                <span class="monitoring-config-label">Blob Version</span>
+                <span class="monitoring-config-value">{service.version_info.blob_version}</span>
+              </div>
+              <div class="monitoring-config-row">
+                <span class="monitoring-config-label">Header Size</span>
+                <span class="monitoring-config-value">{service.version_info.header_size} bytes</span>
+              </div>
+            </>
+          )}
+        </div>
       </section>
 
       {/* Log Files */}

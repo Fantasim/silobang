@@ -70,6 +70,7 @@ type Services struct {
 	Schema     *SchemaService
 	Monitoring *MonitoringService
 	Reconcile  *ReconcileService
+	StatsCache *StatsCache
 }
 
 // NewServices creates a new service container with all services initialized.
@@ -90,6 +91,9 @@ func NewServices(app AppState, log *logger.Logger) *Services {
 	s.Schema = NewSchemaService(app, log)
 	s.Monitoring = NewMonitoringService(app, log)
 	s.Reconcile = NewReconcileService(app, log)
+	s.StatsCache = NewStatsCache(app, log, s.Config)
+	s.Monitoring.SetStatsCache(s.StatsCache)
+	s.Reconcile.SetStatsCache(s.StatsCache)
 
 	return s
 }

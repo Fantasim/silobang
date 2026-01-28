@@ -37,6 +37,7 @@ type ServiceInfo struct {
 	TotalIndexedHashes int64          `json:"total_indexed_hashes"`
 	TopicsSummary      TopicsSummary  `json:"topics_summary"`
 	StorageSummary     StorageSummary `json:"storage_summary"`
+	MaxDiskUsageBytes  int64          `json:"max_disk_usage_bytes"`
 	VersionInfo        VersionInfo    `json:"version_info"`
 }
 
@@ -265,6 +266,7 @@ type MonitoringResponse struct {
 	System      MonitoringSystem      `json:"system"`
 	Application MonitoringApplication `json:"application"`
 	Logs        MonitoringLogs        `json:"logs"`
+	Service     *ServiceInfo          `json:"service,omitempty"`
 }
 
 // MonitoringSystem holds OS-level resource metrics

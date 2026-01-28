@@ -22,8 +22,9 @@ type ReconcileResult struct {
 // from disk and purges their orphaned entries from the orchestrator database.
 // It runs once at startup and periodically in the background.
 type ReconcileService struct {
-	app    AppState
-	logger *logger.Logger
+	app        AppState
+	logger     *logger.Logger
+	statsCache *StatsCache
 
 	stopCh  chan struct{}
 	running bool
@@ -37,6 +38,12 @@ func NewReconcileService(app AppState, log *logger.Logger) *ReconcileService {
 		logger: log,
 		stopCh: make(chan struct{}),
 	}
+}
+
+// SetStatsCache sets the stats cache reference for reconciliation.
+// Called after StatsCache is initialized in the services container.
+func (s *ReconcileService) SetStatsCache(cache *StatsCache) {
+	s.statsCache = cache
 }
 
 // Reconcile performs a single reconciliation pass.
@@ -86,6 +93,12 @@ func (s *ReconcileService) Reconcile() (*ReconcileResult, error) {
 
 		// Unregister from in-memory state (no-op if already absent)
 		s.app.UnregisterTopic(topic)
+
+		// Evict from stats cache so stale metrics are not served
+		if s.statsCache != nil {
+			s.statsCache.RemoveTopic(topic)
+			s.logger.Debug("[reconcile] evicted topic %q from stats cache", topic)
+		}
 
 		s.logger.Info("[reconcile] purged %d orphaned asset_index entries for removed topic %q", purged, topic)
 

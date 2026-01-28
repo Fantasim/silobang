@@ -6,6 +6,8 @@
 
 .app {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   background: var(--bg-primary);
   color: var(--text-primary);
   font-family: var(--font-mono);
@@ -15,9 +17,31 @@
 }
 
 .main-content {
+  flex: 1;
   padding: var(--space-6) var(--space-8);
   max-width: 1600px;
   margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Footer */
+.app-footer {
+  text-align: center;
+  padding: var(--space-4) var(--space-8);
+  border-top: 1px solid var(--border-dim);
+}
+
+.app-footer-link {
+  font-size: var(--font-xs);
+  color: var(--text-dim);
+  text-decoration: none;
+  letter-spacing: var(--tracking-wide);
+  transition: color var(--transition-fast);
+}
+
+.app-footer-link:hover {
+  color: var(--terminal-green);
 }
 
 /* Navigation bar */
@@ -118,7 +142,7 @@
 /* Topic cards grid */
 .topics-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
   gap: var(--space-4);
 }
 
@@ -157,9 +181,14 @@
 }
 
 .topic-card-name {
-  font-size: var(--font-lg);
-  font-weight: 600;
+  font-size: var(--font-xl);
+  font-weight: 700;
   color: var(--text-primary);
+  margin: 0;
+  letter-spacing: var(--tracking-wide);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .topic-card-status {
@@ -450,6 +479,50 @@
    TOPIC CARD STATS
    ============================================================================ */
 
+/* Two-column metrics layout */
+.topic-card-metrics {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.topic-card-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.topic-card-metric:last-child {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.topic-card-metric-value {
+  font-size: var(--font-xl);
+  font-weight: 600;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+  cursor: default;
+}
+
+.topic-card-metric-value:hover {
+  color: var(--terminal-green);
+}
+
+.topic-card-metric-value--size {
+  color: var(--terminal-cyan);
+}
+
+.topic-card-metric-value--size:hover {
+  color: var(--terminal-cyan-dim);
+}
+
+.topic-card-metric-share {
+  font-size: var(--font-xs);
+  color: var(--text-dim);
+}
+
+/* Legacy stat classes (used on topic detail page) */
 .topic-stat {
   display: flex;
   flex-direction: column;
@@ -460,7 +533,6 @@
   font-size: var(--font-lg);
   font-weight: 600;
   font-family: var(--font-mono);
-  /* Default to white for counts */
   color: var(--text-primary);
 }
 
@@ -488,6 +560,7 @@
 .topic-card-last-added {
   font-size: var(--font-sm);
   color: var(--text-secondary);
+  cursor: default;
 }
 
 /* ============================================================================
@@ -1095,6 +1168,33 @@
 
 .service-info-card-value--date {
   color: var(--terminal-amber);
+}
+
+/* Storage usage color variants — thresholds defined in constants/monitoring.js */
+.service-info-card-value--storage-ok {
+  color: var(--terminal-cyan);
+  text-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+}
+
+.service-info-card-value--storage-warning {
+  color: var(--terminal-amber);
+  text-shadow: 0 0 15px rgba(255, 176, 0, 0.3);
+}
+
+.service-info-card-value--storage-critical {
+  color: var(--terminal-red);
+  text-shadow: 0 0 15px rgba(255, 51, 51, 0.3);
+}
+
+.service-info-card-value--storage-danger {
+  color: #ff0000;
+  text-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+  animation: pulse-storage-danger 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-storage-danger {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
 }
 
 .service-info-card-subtitle {
@@ -3544,6 +3644,40 @@ tr:hover .cell-hash-actions {
   height: 100%;
   border-radius: var(--radius-sm);
   transition: width var(--transition-medium);
+}
+
+/* Configuration key-value list */
+.monitoring-config-grid {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-5);
+}
+
+.monitoring-config-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--border-dim);
+}
+
+.monitoring-config-row:last-child {
+  border-bottom: none;
+}
+
+.monitoring-config-label {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+}
+
+.monitoring-config-value {
+  font-size: var(--font-sm);
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+  text-align: right;
+  word-break: break-all;
+  max-width: 60%;
 }
 
 /* Log files: 2-column grid */

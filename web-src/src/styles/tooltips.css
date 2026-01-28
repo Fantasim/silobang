@@ -185,3 +185,129 @@
   border-top: none;
   border-right: none;
 }
+
+/* ============================================================================
+   DETAIL TOOLTIP
+   Hover-triggered panel with rich content support.
+   Like SmartTooltip but accepts arbitrary children and stays open on hover.
+   ============================================================================ */
+
+.detail-tooltip {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--border-radius);
+  padding: 0;
+  min-width: 200px;
+  max-width: 360px;
+  z-index: var(--z-smart-tooltip);
+  backdrop-filter: blur(12px);
+  box-shadow:
+    0 6px 24px var(--black-alpha-60),
+    0 0 1px rgba(0, 255, 65, 0.3),
+    inset 0 1px 0 var(--white-alpha-2);
+  pointer-events: auto;
+  font-family: var(--font-mono);
+}
+
+/* Arrow indicators */
+.detail-tooltip::before {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-dim);
+  transform: rotate(45deg);
+}
+
+.detail-tooltip-top::before {
+  bottom: -5px;
+  left: 50%;
+  margin-left: -4px;
+  border-top: none;
+  border-left: none;
+}
+
+.detail-tooltip-bottom::before {
+  top: -5px;
+  left: 50%;
+  margin-left: -4px;
+  border-bottom: none;
+  border-right: none;
+}
+
+.detail-tooltip-left::before {
+  right: -5px;
+  top: 50%;
+  margin-top: -4px;
+  border-bottom: none;
+  border-left: none;
+}
+
+.detail-tooltip-right::before {
+  left: -5px;
+  top: 50%;
+  margin-top: -4px;
+  border-top: none;
+  border-right: none;
+}
+
+/* Header */
+.detail-tooltip-header {
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg-tertiary);
+  font-size: var(--font-sm);
+  color: var(--terminal-cyan);
+  letter-spacing: var(--tracking-wide);
+  font-weight: 600;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border-dim);
+}
+
+/* Body */
+.detail-tooltip-body {
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+/* Stat rows */
+.detail-tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-1-5) var(--space-3);
+  border-bottom: 1px solid color-mix(in srgb, var(--terminal-green) 5%, transparent);
+  font-size: var(--font-sm);
+  gap: var(--space-4);
+}
+
+.detail-tooltip-row:last-child {
+  border-bottom: none;
+}
+
+.detail-tooltip-label {
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.detail-tooltip-value {
+  color: var(--terminal-green);
+  font-weight: 600;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Section separator */
+.detail-tooltip-section {
+  padding: var(--space-1) var(--space-3);
+  background: var(--bg-tertiary);
+  border-top: 1px solid var(--border-dim);
+  border-bottom: 1px solid var(--border-dim);
+}
+
+.detail-tooltip-section-label {
+  font-size: var(--font-xs);
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+}

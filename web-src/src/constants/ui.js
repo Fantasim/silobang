@@ -195,3 +195,27 @@ export const TOAST_TYPES = {
  * Default toast duration in milliseconds
  */
 export const TOAST_DEFAULT_DURATION = 3000;
+
+// =============================================================================
+// DASHBOARD CONFIGURATION
+// =============================================================================
+
+/**
+ * Minimum number of topics before showing the search/filter toolbar.
+ * Below this threshold the toolbar adds clutter without value.
+ */
+export const TOPICS_TOOLBAR_MIN_COUNT = 15;
+
+// =============================================================================
+// APPLICATION METADATA
+// =============================================================================
+
+/**
+ * Application repository URL (displayed in footer)
+ */
+export const APP_REPO_URL = 'https://github.com/Fantasim/silobang';
+
+/**
+ * Application display name
+ */
+export const APP_DISPLAY_NAME = 'SiloBang';

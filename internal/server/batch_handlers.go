@@ -248,6 +248,15 @@ func (s *Server) handleBatchMetadata(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
+	// Invalidate stats cache for affected topics
+	affectedTopics := make([]string, 0, len(grouped))
+	for _, group := range grouped {
+		affectedTopics = append(affectedTopics, group.Topic)
+	}
+	if len(affectedTopics) > 0 {
+		s.app.Services.StatsCache.InvalidateTopics(affectedTopics)
+	}
+
 	response := BatchMetadataResponse{
 		Success:   failed == 0,
 		Total:     len(allResults),
@@ -525,6 +534,15 @@ func (s *Server) handleApplyMetadata(w http.ResponseWriter, r *http.Request) {
 			Failed:         failed,
 			Processor:      req.Processor,
 		})
+	}
+
+	// Invalidate stats cache for affected topics
+	affectedApplyTopics := make([]string, 0, len(grouped))
+	for _, group := range grouped {
+		affectedApplyTopics = append(affectedApplyTopics, group.Topic)
+	}
+	if len(affectedApplyTopics) > 0 {
+		s.app.Services.StatsCache.InvalidateTopics(affectedApplyTopics)
 	}
 
 	response := BatchMetadataResponse{

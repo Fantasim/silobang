@@ -12,6 +12,7 @@ export { MetadataValue } from './MetadataValue';
 export { Icon } from './Icon';
 export { Portal } from './Portal';
 export { SmartTooltip, SimpleTooltip } from './SmartTooltip';
+export { DetailTooltip, DetailRow, DetailSection } from './DetailTooltip';
 export { MetadataModal } from './MetadataModal';
 
 // Feature components (moved from dashboard/)
@@ -21,3 +22,4 @@ export { AuditActionFilter } from './AuditActionFilter';
 export { DataTable } from './DataTable';
 export { NavBar } from './NavBar';
 export { UploadZone } from './UploadZone';
+export { Footer } from './Footer';

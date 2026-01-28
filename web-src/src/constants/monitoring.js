@@ -19,3 +19,8 @@ export const MONITORING_DISK_CRITICAL_PERCENT = 90;
 export const MONITORING_DISK_LABELS = {
   STORAGE: 'Storage',
 };
+
+// Storage usage thresholds (percentage)
+export const STORAGE_THRESHOLD_WARNING = 80;
+export const STORAGE_THRESHOLD_CRITICAL = 90;
+export const STORAGE_THRESHOLD_DANGER = 98;

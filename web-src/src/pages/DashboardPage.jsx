@@ -11,73 +11,11 @@ import {
   fetchTopics,
   createTopic
 } from '@store/topics';
-import { formatBytes } from '../utils/format';
 import { createTopicModal, showToast } from '@store/ui';
 import { navigate } from '../Router';
 import { api } from '@services/api';
 import { canManageTopics, canVerify } from '@store/auth';
-
-function ServiceInfoBanner({ info }) {
-  if (!info) return null;
-
-  const { topics_summary, storage_summary, total_indexed_hashes, orchestrator_db_size, version } = info;
-
-  return (
-    <div class="service-info">
-      {/* Column 1: Topics */}
-      <div class="service-info-card">
-        <div class="service-info-card-header">
-          <span class="service-info-card-title">Topics</span>
-          <span class={`service-info-card-status ${topics_summary?.unhealthy > 0 ? 'has-issues' : ''}`}>
-            {topics_summary?.unhealthy > 0 ? `${topics_summary.unhealthy} unhealthy` : 'All healthy'}
-          </span>
-        </div>
-        <div class="service-info-card-value service-info-card-value--count">{topics_summary?.total || 0}</div>
-      </div>
-
-
-      <div class="service-info-card">
-        <div class="service-info-card-header">
-          <span class="service-info-card-title">Total DAT</span>
-        </div>
-        <div class="service-info-card-value service-info-card-value--count">{storage_summary?.total_dat_files}</div>
-      </div>
-
-      {/* Column 2: Assets */}
-      <div class="service-info-card">
-        <div class="service-info-card-header">
-          <span class="service-info-card-title">Indexed Assets</span>
-        </div>
-        <div class="service-info-card-value service-info-card-value--count">{(total_indexed_hashes || 0).toLocaleString()}</div>
-      </div>
-
-      {/* Column 3: Storage */}
-      <div class="service-info-card">
-        <div class="service-info-card-header">
-          <span class="service-info-card-title">Total Storage</span>
-        </div>
-        <div class="service-info-card-value service-info-card-value--size">{formatBytes(storage_summary?.total_dat_size)}</div>
-      </div>
-
-      {/* Column 4: DB Size */}
-      <div class="service-info-card">
-        <div class="service-info-card-header">
-          <span class="service-info-card-title">Database Size</span>
-        </div>
-        <div class="service-info-card-value service-info-card-value--size">{formatBytes(storage_summary?.total_db_size)}</div>
-      </div>
-
-      {/* Column 5: Orchestrator DB Size */}
-      <div class="service-info-card">
-        <div class="service-info-card-header">
-          <span class="service-info-card-title">Orchestrator DB Size</span>
-        </div>
-        <div class="service-info-card-value service-info-card-value--size">{formatBytes(orchestrator_db_size)}</div>
-      </div>
-
-    </div>
-  );
-}
+import { TOPICS_TOOLBAR_MIN_COUNT } from '@constants/ui';
 
 export function DashboardPage() {
   const [newTopicName, setNewTopicName] = useState('');
@@ -233,6 +171,11 @@ export function DashboardPage() {
 
   const hasUnhealthy = topics.value.some(t => !t.healthy);
 
+  // Service-level totals for share percentage calculations in topic cards
+  const info = serviceInfo.value;
+  const totalIndexedHashes = info?.total_indexed_hashes || 0;
+  const totalStorageBytes = (info?.storage_summary?.total_dat_size || 0) + (info?.storage_summary?.total_db_size || 0);
+
   return (
     <div>
       <div class="page-header">
@@ -251,10 +194,8 @@ export function DashboardPage() {
         </div>
       </div>
 
-      <ServiceInfoBanner info={serviceInfo.value} />
-
-      {/* Search and Filter Bar */}
-      {topics.value.length > 0 && (
+      {/* Search and Filter Bar — only shown with enough topics to warrant filtering */}
+      {topics.value.length >= TOPICS_TOOLBAR_MIN_COUNT && (
         <div class="topics-toolbar">
           <div class="topics-search">
             <input
@@ -308,6 +249,8 @@ export function DashboardPage() {
               key={topic.name}
               topic={topic}
               onClick={() => navigate(`/topic/${topic.name}`)}
+              totalIndexedHashes={totalIndexedHashes}
+              totalStorageBytes={totalStorageBytes}
             />
           ))}
         </div>

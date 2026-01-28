@@ -137,7 +137,7 @@ export function DataTable({ columns, rows, enableSelection = true }) {
     // Auto-detect formatting based on column name
     const lowerName = colName.toLowerCase();
 
-    if (lowerName.includes('size') || lowerName === 'avg_size') {
+    if ((lowerName.includes('size') || lowerName === 'avg_size') && typeof value === 'number') {
       return formatBytes(value);
     }
 

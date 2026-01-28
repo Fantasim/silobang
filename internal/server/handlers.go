@@ -84,6 +84,9 @@ func (s *Server) postConfig(w http.ResponseWriter, r *http.Request) {
 	// Re-initialize services so AuthService picks up the new orchestrator DB
 	s.app.ReinitServices()
 
+	// Build stats cache after working directory setup
+	s.app.Services.StatsCache.BuildAll()
+
 	// Bootstrap auth if this is first-time setup (no users yet)
 	response := map[string]interface{}{"success": true}
 	isBootstrap := false
@@ -149,22 +152,70 @@ func (s *Server) listTopics(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get topics from service
+	cache := s.app.Services.StatsCache
+
+	// Use cached stats if available, otherwise fall back to live queries
+	var result *services.TopicsListResult
+	var serviceInfo interface{}
+
+	if cache.IsInitialized() {
+		// Build topic list from cache
+		cachedStats := cache.GetAllTopicStats()
+		topicNames := s.app.ListTopics()
+		topics := make([]services.TopicInfo, 0, len(topicNames))
+		allStats := make(map[string]map[string]interface{})
+
+		for _, name := range topicNames {
+			healthy, errMsg := s.app.IsTopicHealthy(name)
+			ti := services.TopicInfo{
+				Name:    name,
+				Healthy: healthy,
+			}
+			if !healthy {
+				ti.Error = errMsg
+			} else if stats, ok := cachedStats[name]; ok {
+				ti.Stats = stats
+				allStats[name] = stats
+			}
+			topics = append(topics, ti)
+		}
+
+		// Use cached service info, enriched with version info
+		cachedServiceInfo := cache.GetServiceInfo()
+		if cachedServiceInfo != nil {
+			serviceInfo = s.enrichCachedServiceInfo(cachedServiceInfo)
+		} else {
+			// Fallback: compute from cached topic stats
+			si, err := s.getServiceInfo(allStats)
+			if err != nil {
+				s.logger.Warn("Failed to get service info: %v", err)
+			}
+			serviceInfo = si
+		}
+
+		WriteSuccess(w, map[string]interface{}{
+			"topics":  topics,
+			"service": serviceInfo,
+		})
+		return
+	}
+
+	// Fallback: live query (cache not yet initialized)
+	s.logger.Debug("[stats-cache] cache not initialized, using live queries")
 	result, err := s.app.Services.Config.ListTopics()
 	if err != nil {
 		s.handleServiceError(w, err)
 		return
 	}
 
-	// Compute service info using server's method (needs access to file system)
-	serviceInfo, err := s.getServiceInfo(result.AllStats)
+	si, err := s.getServiceInfo(result.AllStats)
 	if err != nil {
 		s.logger.Warn("Failed to get service info: %v", err)
 	}
 
 	WriteSuccess(w, map[string]interface{}{
 		"topics":  result.Topics,
-		"service": serviceInfo,
+		"service": si,
 	})
 }
 
@@ -209,6 +260,9 @@ func (s *Server) createTopic(w http.ResponseWriter, r *http.Request) {
 			TopicName: req.Name,
 		})
 	}
+
+	// Initialize cache entry for new topic
+	s.app.Services.StatsCache.InvalidateTopic(req.Name)
 
 	WriteSuccess(w, map[string]interface{}{
 		"success": true,
@@ -357,6 +411,11 @@ func (s *Server) uploadAsset(w http.ResponseWriter, r *http.Request, topicName s
 			Size:      result.Size,
 			Skipped:   result.Skipped,
 		})
+	}
+
+	// Invalidate stats cache for this topic
+	if !result.Skipped {
+		s.app.Services.StatsCache.InvalidateTopic(topicName)
 	}
 
 	// Format response
@@ -573,6 +632,11 @@ func (s *Server) postMetadata(w http.ResponseWriter, r *http.Request, hash strin
 	// Increment quota
 	if s.app.Services.Auth != nil {
 		s.app.Services.Auth.GetEvaluator().IncrementQuota(identity.User.ID, constants.AuthActionMetadata, 0)
+	}
+
+	// Invalidate stats cache for the affected topic
+	if result.TopicName != "" {
+		s.app.Services.StatsCache.InvalidateTopic(result.TopicName)
 	}
 
 	WriteSuccess(w, map[string]interface{}{
