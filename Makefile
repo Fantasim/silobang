@@ -132,7 +132,9 @@ build-frontend:
 
 build-backend: build-frontend
 	@echo "$(COLOR_BLUE)Building Go binary...$(COLOR_RESET)"
-	@$(GOBUILD) $(GOFLAGS) -o $(BINARY_NAME) ./cmd/silobang
+	@VERSION=$$(git describe --tags --always --dirty 2>/dev/null || echo "dev"); \
+	LDFLAGS="-X silobang/internal/version.Version=$$VERSION"; \
+	$(GOBUILD) $(GOFLAGS) -ldflags="$$LDFLAGS" -o $(BINARY_NAME) ./cmd/silobang
 	@echo "$(COLOR_GREEN)✓ Backend built → ./$(BINARY_NAME)$(COLOR_RESET)"
 
 # ============================================================================

@@ -21,7 +21,7 @@ import { fetchTopics } from '@store/topics';
 import { api } from '@services/api';
 import { formatBytes } from '../utils/format';
 import { FILENAME_FORMATS, DEFAULT_FILENAME_FORMAT, DEFAULT_INCLUDE_METADATA } from '@constants/download';
-import { canQuery } from '@store/auth';
+import { canQuery, canBulkDownload } from '@store/auth';
 import { Icon } from '@components/ui/Icon';
 
 export function QueryPage({ initPreset, initTopics, initParams }) {
@@ -227,7 +227,7 @@ export function QueryPage({ initPreset, initTopics, initParams }) {
                   {queryResult.value.row_count} row{queryResult.value.row_count !== 1 ? 's' : ''}
                 </span>
                 <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
-                  {queryResult.value.columns.includes('asset_id') && (
+                  {canBulkDownload.value && queryResult.value.columns.includes('asset_id') && (
                     <Button variant="ghost" onClick={handleBulkDownload}>
                       Bulk Download
                     </Button>

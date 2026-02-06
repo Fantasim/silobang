@@ -21,7 +21,14 @@ import { navigate } from '../Router';
 import { formatBytes, formatDateTime } from '../utils/format';
 import { api } from '@services/api';
 import { canUpload, canVerify, canQuery } from '@store/auth';
-import { RECENT_FILES_PRESET, RECENT_FILES_DAYS, RECENT_FILES_LIMIT } from '@constants/query';
+import {
+  RECENT_FILES_PRESET,
+  RECENT_FILES_DAYS,
+  RECENT_FILES_LIMIT,
+  TIME_SERIES_PRESET,
+  TIME_SERIES_DAYS,
+  SIZE_DISTRIBUTION_PRESET
+} from '@constants/query';
 
 export function TopicPage({ topicName }) {
   const [verifying, setVerifying] = useState(false);
@@ -115,14 +122,32 @@ export function TopicPage({ topicName }) {
         </div>
         <div class="page-header-right">
           {canQuery.value && (
-            <Button
-              variant="ghost"
-              onClick={() => navigate(
-                `/query?preset=${RECENT_FILES_PRESET}&topics=${encodeURIComponent(topicName)}&days=${RECENT_FILES_DAYS}&limit=${RECENT_FILES_LIMIT}`
-              )}
-            >
-              Recent Files
-            </Button>
+            <>
+              <Button
+                variant="ghost"
+                onClick={() => navigate(
+                  `/query?preset=${RECENT_FILES_PRESET}&topics=${encodeURIComponent(topicName)}&days=${RECENT_FILES_DAYS}&limit=${RECENT_FILES_LIMIT}`
+                )}
+              >
+                Recent Files
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => navigate(
+                  `/query?preset=${TIME_SERIES_PRESET}&topics=${encodeURIComponent(topicName)}&days=${TIME_SERIES_DAYS}`
+                )}
+              >
+                Upload History
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => navigate(
+                  `/query?preset=${SIZE_DISTRIBUTION_PRESET}&topics=${encodeURIComponent(topicName)}`
+                )}
+              >
+                Size Distribution
+              </Button>
+            </>
           )}
           {canVerify.value && (
             <Button

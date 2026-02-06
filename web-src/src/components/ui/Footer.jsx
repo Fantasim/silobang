@@ -16,7 +16,7 @@ function isReleaseVersion(v) {
  */
 export function Footer() {
   const version = serviceInfo.value?.version_info?.app_version;
-  const versionLabel = isReleaseVersion(version) ? ` v${version}` : '';
+  const versionLabel = version ? ` ${version}` : '';
 
   return (
     <footer class="app-footer">

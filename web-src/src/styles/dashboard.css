@@ -27,9 +27,14 @@
 
 /* Footer */
 .app-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
   text-align: center;
   padding: var(--space-4) var(--space-8);
   border-top: 1px solid var(--border-dim);
+  background: var(--bg-primary);
+  flex-shrink: 0;
 }
 
 .app-footer-link {

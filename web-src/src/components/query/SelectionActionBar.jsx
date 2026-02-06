@@ -1,5 +1,6 @@
 import { Button } from '@components/ui/Button';
 import { selectedRows, clearSelection, getSelectedHashes } from '@store/query';
+import { canMetadata } from '@store/auth';
 
 export function SelectionActionBar({ onSetMetadata }) {
   const count = selectedRows.value.size;
@@ -12,9 +13,11 @@ export function SelectionActionBar({ onSetMetadata }) {
         {count} asset{count !== 1 ? 's' : ''} selected
       </span>
       <div class="selection-action-bar-actions">
-        <Button onClick={onSetMetadata}>
-          Set Metadata
-        </Button>
+        {canMetadata.value && (
+          <Button onClick={onSetMetadata}>
+            Set Metadata
+          </Button>
+        )}
         <Button variant="ghost" onClick={clearSelection}>
           Clear
         </Button>

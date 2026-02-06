@@ -5,6 +5,26 @@ All notable changes to SiloBang will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- Upload History button on topic page — navigates to time-series query showing upload activity by day for the last 30 days
+- Size Distribution button on topic page — navigates to size-distribution query showing asset counts across size ranges (tiny/small/medium/large/huge)
+- Sticky footer positioning — footer now remains visible at bottom of viewport when scrolling through long pages
+
+### Fixed
+- Footer version display — Makefile now injects version from `git describe` during local builds; version always displays (previously hidden for dev builds)
+- Permission-based UI gating — added missing permission checks to prevent unauthorized access and 403 errors:
+  - Bulk download button now gated by `canBulkDownload` permission
+  - Download asset button in asset drawer gated by `canDownload` permission
+  - Metadata editing (add/delete) in asset drawer gated by `canMetadata` permission
+  - Set metadata button in selection action bar gated by `canMetadata` permission
+  - Users without `canMetadata` now see read-only metadata view with "(Read-Only)" label
+
+### Changed
+- Footer CSS updated with `position: sticky`, `z-index: 10`, `background: var(--bg-primary)`, and `flex-shrink: 0` for consistent visibility
+- Footer version label logic simplified to always show version when available (removed `isReleaseVersion` check)
+
 ## [0.2.0] - 2026-01-28
 
 ### Added

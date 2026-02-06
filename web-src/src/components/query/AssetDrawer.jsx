@@ -8,6 +8,7 @@ import { assetDrawerOpen, assetDrawerHash, closeAssetDrawer } from '@store/query
 import { formatDateTime, formatBytes } from '../../utils/format';
 import { TOAST_TYPES } from '@constants/ui';
 import { DEFAULT_METADATA_PROCESSOR, DEFAULT_METADATA_PROCESSOR_VERSION } from '@constants/metadata';
+import { canDownload, canMetadata } from '@store/auth';
 
 export function AssetDrawer() {
   const [loading, setLoading] = useState(false);
@@ -215,9 +216,11 @@ export function AssetDrawer() {
                 </div>
 
                 <div class="asset-info-actions">
-                  <Button onClick={handleDownload}>
-                    Download Asset
-                  </Button>
+                  {canDownload.value && (
+                    <Button onClick={handleDownload}>
+                      Download Asset
+                    </Button>
+                  )}
                   <Button variant="ghost" onClick={() => copyToClipboard(hash)}>
                     Copy Hash
                   </Button>
@@ -226,7 +229,9 @@ export function AssetDrawer() {
 
               {/* Metadata Section */}
               <div class="asset-drawer-section">
-                <h3 class="asset-drawer-section-title">Computed Metadata</h3>
+                <h3 class="asset-drawer-section-title">
+                  Computed Metadata{!canMetadata.value && ' (Read-Only)'}
+                </h3>
 
                 {sortedMetadata.length === 0 ? (
                   <div class="asset-metadata-empty">
@@ -246,76 +251,80 @@ export function AssetDrawer() {
                           label={item.key}
                           className="asset-metadata-value"
                         />
-                        <button
-                          class="asset-metadata-delete"
-                          onClick={() => handleDeleteMetadata(item.key)}
-                          title="Delete this metadata"
-                        >
-                          &times;
-                        </button>
+                        {canMetadata.value && (
+                          <button
+                            class="asset-metadata-delete"
+                            onClick={() => handleDeleteMetadata(item.key)}
+                            title="Delete this metadata"
+                          >
+                            &times;
+                          </button>
+                        )}
                       </div>
                     ))}
                   </div>
                 )}
 
-                {/* Add Metadata Form */}
-                <form class="asset-metadata-form" onSubmit={handleAddMetadata}>
-                  <h4 class="asset-metadata-form-title">Add Metadata</h4>
-                  <div class="asset-metadata-form-inputs">
-                    <input
-                      type="text"
-                      class="asset-metadata-input"
-                      placeholder="Key"
-                      value={newKey}
-                      onInput={(e) => setNewKey(e.target.value)}
-                      disabled={submitting}
-                    />
-                    <textarea
-                      ref={newValueRef}
-                      class="asset-metadata-input"
-                      placeholder="Value"
-                      disabled={submitting}
-                      rows={1}
-                    />
-                    <Button type="submit" disabled={submitting || !newKey.trim()}>
-                      {submitting ? 'Adding...' : 'Add'}
-                    </Button>
-                  </div>
-
-                  <div
-                    class="bulk-metadata-advanced-toggle"
-                    onClick={() => setShowAdvanced(!showAdvanced)}
-                  >
-                    {showAdvanced ? '▼' : '▶'} Advanced
-                  </div>
-
-                  {showAdvanced && (
-                    <div class="bulk-metadata-advanced">
-                      <div class="bulk-metadata-field">
-                        <label htmlFor="drawer-processor">Processor</label>
-                        <input
-                          id="drawer-processor"
-                          type="text"
-                          placeholder="Processor name"
-                          value={processor}
-                          onInput={(e) => setProcessor(e.target.value)}
-                          disabled={submitting}
-                        />
-                      </div>
-                      <div class="bulk-metadata-field">
-                        <label htmlFor="drawer-processor-version">Version</label>
-                        <input
-                          id="drawer-processor-version"
-                          type="text"
-                          placeholder="Version"
-                          value={processorVersion}
-                          onInput={(e) => setProcessorVersion(e.target.value)}
-                          disabled={submitting}
-                        />
-                      </div>
+                {/* Add Metadata Form - only shown if user has permission */}
+                {canMetadata.value && (
+                  <form class="asset-metadata-form" onSubmit={handleAddMetadata}>
+                    <h4 class="asset-metadata-form-title">Add Metadata</h4>
+                    <div class="asset-metadata-form-inputs">
+                      <input
+                        type="text"
+                        class="asset-metadata-input"
+                        placeholder="Key"
+                        value={newKey}
+                        onInput={(e) => setNewKey(e.target.value)}
+                        disabled={submitting}
+                      />
+                      <textarea
+                        ref={newValueRef}
+                        class="asset-metadata-input"
+                        placeholder="Value"
+                        disabled={submitting}
+                        rows={1}
+                      />
+                      <Button type="submit" disabled={submitting || !newKey.trim()}>
+                        {submitting ? 'Adding...' : 'Add'}
+                      </Button>
                     </div>
-                  )}
-                </form>
+
+                    <div
+                      class="bulk-metadata-advanced-toggle"
+                      onClick={() => setShowAdvanced(!showAdvanced)}
+                    >
+                      {showAdvanced ? '▼' : '▶'} Advanced
+                    </div>
+
+                    {showAdvanced && (
+                      <div class="bulk-metadata-advanced">
+                        <div class="bulk-metadata-field">
+                          <label htmlFor="drawer-processor">Processor</label>
+                          <input
+                            id="drawer-processor"
+                            type="text"
+                            placeholder="Processor name"
+                            value={processor}
+                            onInput={(e) => setProcessor(e.target.value)}
+                            disabled={submitting}
+                          />
+                        </div>
+                        <div class="bulk-metadata-field">
+                          <label htmlFor="drawer-processor-version">Version</label>
+                          <input
+                            id="drawer-processor-version"
+                            type="text"
+                            placeholder="Version"
+                            value={processorVersion}
+                            onInput={(e) => setProcessorVersion(e.target.value)}
+                            disabled={submitting}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </form>
+                )}
               </div>
             </>
           )}
