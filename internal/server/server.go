@@ -7,7 +7,6 @@ import (
 	"os"
 	"os/signal"
 	"sync"
-	"syscall"
 	"time"
 
 	"silobang/internal/auth"
@@ -117,7 +116,7 @@ func (s *Server) registerRoutes(mux *http.ServeMux) {
 func (s *Server) Start() error {
 	// Channel for shutdown signals
 	stop := make(chan os.Signal, 1)
-	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
+	signal.Notify(stop, shutdownSignals...)
 
 	// Start server in goroutine
 	errChan := make(chan error, 1)

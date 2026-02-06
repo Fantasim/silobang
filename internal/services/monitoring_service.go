@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
-	"syscall"
 	"time"
 
 	"silobang/internal/constants"
@@ -161,18 +160,6 @@ func (s *MonitoringService) getSystemInfo(workDir string) SystemInfo {
 	si.ProjectDirSizeBytes = s.calculateDirSize(workDir)
 
 	return si
-}
-
-// GetDiskUsageBytes returns the number of bytes used on the filesystem containing the given path.
-// This is exported for use by other services (e.g. disk limit checks).
-func GetDiskUsageBytes(path string) (uint64, error) {
-	var stat syscall.Statfs_t
-	if err := syscall.Statfs(path, &stat); err != nil {
-		return 0, err
-	}
-	total := stat.Blocks * uint64(stat.Bsize)
-	free := stat.Bfree * uint64(stat.Bsize)
-	return total - free, nil
 }
 
 // CheckDiskLimit verifies that disk usage is below the configured limit.
