@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/banner.png" alt="SiloBang" width="700">
+  <img src="https://raw.githubusercontent.com/Fantasim/silobang/refs/heads/main/docs/baneer.png" alt="SiloBang" width="700">
 </p>
 
 <p align="center">
